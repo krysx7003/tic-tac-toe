@@ -27,9 +27,13 @@ const char *fragmentShaderSource = "#version 330 core\n"
 
 GLuint init_shader();
 Board board = Board();
+double currX, currY;
+int click_count = 0;
 
 void render(GLFWwindow *window, GLuint shaderProgram);
 void render_debug_frame(GLFWwindow *window);
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
 int main(int argc, char *argv[]) {
 	bool gui = true;
@@ -66,10 +70,11 @@ int main(int argc, char *argv[]) {
 
 		board.setupBuffers();
 
+		glfwSetCursorPosCallback(window, cursor_position_callback);
+		glfwSetMouseButtonCallback(window, mouse_button_callback);
+
 		while (!glfwWindowShouldClose(window)) {
 			render(window, shaderProgram);
-			glfwSetCursorPosCallback(window, cursor_position_callback);
-			glfwSetMouseButtonCallback(window, mouse_button_callback);
 		}
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
@@ -105,11 +110,35 @@ void render_debug_frame(GLFWwindow *window) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	ImGui::Text(board.getSize());
+	ImGui::TextUnformatted(board.getSize());
+
+	ImGui::Text("Click count: %d", click_count);
+	ImGui::Text("Position x: %.2f, y: %.2f", currX, currY);
 
 	ImGui::End();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
+	ImGuiIO &io = ImGui::GetIO();
+	ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+	if (io.WantCaptureMouse)
+		return;
+
+	currX = (xpos / 300) - 1;
+	currY = -((ypos / 300) - 1);
+}
+
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
+	ImGuiIO &io = ImGui::GetIO();
+	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+	if (io.WantCaptureMouse)
+		return;
+
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		click_count++;
+	}
 }
 
 GLuint init_shader() {
