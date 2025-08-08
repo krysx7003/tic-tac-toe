@@ -27,6 +27,7 @@ set(GLAD_SOURCE src/include/glad.c)
 
 add_executable(tic-tac-toe
     src/main.cpp
+    src/board.cpp
     ${IMGUI_SOURCES}
     ${GLAD_SOURCE}
 )
