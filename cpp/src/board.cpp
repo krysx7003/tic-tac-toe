@@ -1,14 +1,13 @@
 #include "board.h"
+#include "player.h"
 
 #include <GLFW/glfw3.h>
-#include <sstream>
-#include <string>
 
 Board::Board() {
 	for (int row = 0; row < BOARD_WIDTH; row++) {
 		for (int col = 0; col < BOARD_WIDTH; col++) {
 			addTile(row, col);
-			tiles_state[row + col] = TileState::Empty;
+			tiles_state[(row * 3) + col] = TileState::Empty;
 		}
 	}
 
@@ -21,6 +20,8 @@ Board::Board() {
 	grid.push_back({-1.0f, 1.0f / 3, 0.0f});
 	grid.push_back({1.0f, -1.0f / 3, 0.0f});
 	grid.push_back({-1.0f, -1.0f / 3, 0.0f});
+
+	curr_player = Player::O;
 }
 
 void Board::render(GLuint shaderProgram) {
@@ -35,6 +36,14 @@ void Board::render(GLuint shaderProgram) {
 	glLineWidth(3.0f);
 	glBindVertexArray(VAO_lines);
 	glDrawArrays(GL_LINES, 0, grid.size());
+}
+
+void Board::swapPlayer() {
+	if (curr_player == Player::O) {
+		curr_player = Player::X;
+	} else {
+		curr_player = Player::O;
+	}
 }
 
 void Board::setupBuffers() {
@@ -76,10 +85,42 @@ void Board::addTile(int row, int col) {
 	tiles.push_back({left, bottom, 0.0f});
 }
 
-const char *Board::getSize() {
-	static std::ostringstream oss;
-	oss.str("");
-	oss << "Tiles count: " << tiles.size();
-	static std::string result = oss.str();
-	return result.c_str();
+bool Board::takeTile(int pos) {
+	if (tiles_state[pos] != TileState::Empty) {
+		return false;
+	}
+	if (curr_player == Player::O) {
+		tiles_state[pos] = TileState::TakenO;
+	} else {
+		tiles_state[pos] = TileState::TakenX;
+	}
+	return true;
 }
+
+int Board::getTileCol(float pos) {
+	if (pos <= -0.33f)
+		return 0;
+	if (pos < 0.33f && pos > -0.33f)
+		return 1;
+	if (pos >= 0.33f)
+		return 2;
+
+	return -1;
+}
+
+int Board::getTileRow(float pos) {
+	if (pos >= 0.33f)
+		return 0;
+	if (pos < 0.33f && pos > -0.33f)
+		return 1;
+	if (pos <= -0.33f)
+		return 2;
+
+	return -1;
+}
+
+int Board::getSize() { return tiles.size(); }
+
+short Board::getPlayer() { return curr_player; }
+
+short *Board::getTilesState() { return tiles_state; }

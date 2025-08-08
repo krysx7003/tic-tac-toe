@@ -1,5 +1,6 @@
 #pragma once
 
+#include "player.h"
 #include "tile.h"
 
 #include "include/glad/glad.h"
@@ -18,16 +19,25 @@ class Board {
 	std::vector<glm ::vec3> tiles;
 	GLuint VAO_lines, VBO_lines;
 	GLuint VAO_tiles, VBO_tiles;
+	short curr_player;
+
 	void addTile(int row, int col);
 
   public:
-	void setupBuffers();
-	u_int tiles_state[BOARD_SIZE];
+	short tiles_state[BOARD_SIZE];
+
 	Board();
+
+	void setupBuffers();
 	void render(GLuint shaderProgram);
-	std::vector<glm ::vec3> getVertices();
-	u_int *getTilesState();
-	const char *getSize();
+	void swapPlayer();
+	bool takeTile(int pos);
+
+	short *getTilesState();
+	int getSize();
+	int getTileCol(float pos);
+	int getTileRow(float pos);
+	short getPlayer();
 
 	~Board() {
 		glDeleteVertexArrays(1, &VAO_lines);

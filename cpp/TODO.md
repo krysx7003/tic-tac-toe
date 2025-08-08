@@ -1,10 +1,10 @@
 # Tic-tac-toe
 ## TODO
 
-- [ ] Spawn a window
-- [ ] Display game board (3x3 grid. Each tile should be accesible)
+- [x] Spawn a window
+- [x] Display game board (3x3 grid. Each tile should be accesible)
 - [ ] Display pieces (X and O)
-- [ ] Have two players
+- [x] Have two players
 - [ ] On click place piece
 - [ ] Add game rules
 - [ ] Add win condition

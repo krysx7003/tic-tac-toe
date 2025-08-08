@@ -1,4 +1,4 @@
-#include <sstream>
+#include <iostream>
 #include <string>
 
 #include "include/glad/glad.h"
@@ -29,6 +29,7 @@ GLuint init_shader();
 Board board = Board();
 double currX, currY;
 int click_count = 0;
+int tileId = -1;
 
 void render(GLFWwindow *window, GLuint shaderProgram);
 void render_debug_frame(GLFWwindow *window);
@@ -110,10 +111,16 @@ void render_debug_frame(GLFWwindow *window) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	ImGui::TextUnformatted(board.getSize());
-
+	ImGui::Text("Vertices: %d", board.getSize());
 	ImGui::Text("Click count: %d", click_count);
 	ImGui::Text("Position x: %.2f, y: %.2f", currX, currY);
+	ImGui::Text("Clicked tile: %d", tileId);
+	ImGui::Text("Current player: %d", board.getPlayer());
+
+	short *state = board.getTilesState();
+	ImGui::Text("| %d | %d | %d |\n-------------", state[0], state[1], state[2]);
+	ImGui::Text("| %d | %d | %d |\n-------------", state[3], state[4], state[5]);
+	ImGui::Text("| %d | %d | %d |\n-------------", state[6], state[7], state[8]);
 
 	ImGui::End();
 	ImGui::Render();
@@ -138,6 +145,14 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		click_count++;
+
+		int col = board.getTileCol(currX);
+		int row = board.getTileRow(currY) * 3;
+		tileId = col + row;
+
+		if (board.takeTile(tileId)) {
+			board.swapPlayer();
+		}
 	}
 }
 
