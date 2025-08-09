@@ -1,3 +1,6 @@
+#include <cstdio>
+#include <cstdlib>
+#include <ostream>
 #include <string>
 
 #include "include/glad/glad.h"
@@ -33,6 +36,7 @@ void render(GLFWwindow *window, GLuint shaderProgram);
 void render_debug_frame(GLFWwindow *window);
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+bool isValidInput(char c);
 
 int main(int argc, char *argv[]) {
 	bool gui = true;
@@ -83,8 +87,35 @@ int main(int argc, char *argv[]) {
 		glfwDestroyWindow(window);
 
 		glfwTerminate();
+	} else {
+		game = Game();
+
+		while (true) {
+			game.start();
+
+			char c;
+			printf("Restart (y/n): ");
+			scanf(" %c", &c);
+
+			while (!isValidInput(c)) {
+				printf("Invalid input. Restart (y/n): ");
+				scanf(" %c", &c);
+			}
+
+			if (c == 'y')
+				game.restart();
+			else
+				break;
+		}
 	}
 	return 0;
+}
+
+bool isValidInput(char c) {
+	if (c == 'y' || c == 'n')
+		return true;
+
+	return false;
 }
 
 void render(GLFWwindow *window, GLuint shaderProgram) {
@@ -117,7 +148,7 @@ void render_debug_frame(GLFWwindow *window) {
 	ImGui::Text("| %c | %c | %c |\n-------------", state[6], state[7], state[8]);
 
 	if (!game.active) {
-		ImGui::Text("Game ended winner: %d", game.getWinner());
+		ImGui::Text("Game ended winner: %c", game.getWinner());
 	}
 
 	if (ImGui::Button("Restart")) {
@@ -147,8 +178,7 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		click_count++;
-
-		game.clickedTile(currX, currY);
+		game.chosenTile(currX, currY);
 	}
 }
 

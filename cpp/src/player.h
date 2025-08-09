@@ -2,6 +2,6 @@
 
 class Player {
   public:
-	static const short X = 1;
-	static const short O = 2;
+	static const char X = 'X';
+	static const char O = 'O';
 };

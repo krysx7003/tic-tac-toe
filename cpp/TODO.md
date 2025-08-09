@@ -9,6 +9,7 @@
 - [ ] On click place piece
 - [x] Add game rules
 - [x] Add win condition
+- [x] Make game playable without GUI
 
 ## Game rules
 

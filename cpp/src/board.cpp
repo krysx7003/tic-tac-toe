@@ -6,22 +6,26 @@ Board::Board(bool gui) {
 	boardGui = gui;
 	setTilesState();
 
-	for (int row = 0; row < BOARD_WIDTH; row++) {
-		for (int col = 0; col < BOARD_WIDTH; col++) {
-			addTile(row, col);
+	if (boardGui) {
+		for (int row = 0; row < BOARD_WIDTH; row++) {
+			for (int col = 0; col < BOARD_WIDTH; col++) {
+				addTile(row, col);
+			}
 		}
+
+		grid.push_back({1.0f / 3, 1.0f, 0.0f});
+		grid.push_back({1.0f / 3, -1.0f, 0.0f});
+		grid.push_back({-1.0f / 3, 1.0f, 0.0f});
+		grid.push_back({-1.0f / 3, -1.0f, 0.0f});
+
+		grid.push_back({1.0f, 1.0f / 3, 0.0f});
+		grid.push_back({-1.0f, 1.0f / 3, 0.0f});
+		grid.push_back({1.0f, -1.0f / 3, 0.0f});
+		grid.push_back({-1.0f, -1.0f / 3, 0.0f});
 	}
-
-	grid.push_back({1.0f / 3, 1.0f, 0.0f});
-	grid.push_back({1.0f / 3, -1.0f, 0.0f});
-	grid.push_back({-1.0f / 3, 1.0f, 0.0f});
-	grid.push_back({-1.0f / 3, -1.0f, 0.0f});
-
-	grid.push_back({1.0f, 1.0f / 3, 0.0f});
-	grid.push_back({-1.0f, 1.0f / 3, 0.0f});
-	grid.push_back({1.0f, -1.0f / 3, 0.0f});
-	grid.push_back({-1.0f, -1.0f / 3, 0.0f});
 }
+
+Board::Board() { setTilesState(); }
 
 void Board::setTilesState() {
 	for (int row = 0; row < BOARD_WIDTH; row++) {
@@ -84,7 +88,7 @@ void Board::addTile(int row, int col) {
 	tiles.push_back({left, bottom, 0.0f});
 }
 
-bool Board::takeTile(int pos, short player) {
+bool Board::takeTile(int pos, char player) {
 	if (tiles_state[pos] != TileState::Empty) {
 		return false;
 	}

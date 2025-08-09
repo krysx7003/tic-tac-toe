@@ -28,11 +28,11 @@ class Board {
 	char tiles_state[BOARD_SIZE];
 
 	Board(bool gui);
-	Board() {};
+	Board();
 
 	void setupBuffers();
 	void render(GLuint shaderProgram);
-	bool takeTile(int pos, short player);
+	bool takeTile(int pos, char player);
 	void setTilesState();
 
 	char *getTilesState();

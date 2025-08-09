@@ -2,7 +2,7 @@
 #include "board.h"
 
 class Game {
-	short curr_player = -1;
+	char curr_player = -1;
 	short lastTile = -1;
 	short winner = -1;
 
@@ -11,7 +11,6 @@ class Game {
 	bool diagonalLine();
 	bool diagonalLeftLine();
 	bool diagonalRightLine();
-	bool isDraw();
 
 	void setWinner(char state);
 	void swapPlayer();
@@ -23,11 +22,14 @@ class Game {
 	Game(bool gui);
 	Game() {};
 
-	void clickedTile(float col, float row);
+	void start();
+	bool chosenTile(float col, float row);
+	bool chosenTile(int tileId);
 	bool winCondition();
+	bool isDraw();
 	short getLastTile();
 	void restart();
 
-	short getPlayer();
+	char getPlayer();
 	short getWinner();
 };

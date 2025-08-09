@@ -6,6 +6,41 @@ Game::Game(bool gui) {
 	board = Board(gui);
 	board.setupBuffers();
 }
+
+void Game::start() {
+	while (active) {
+		system("clear");
+
+		printf("Current player: %c", getPlayer());
+		char *state = board.getTilesState();
+		printf("\n-------------\n");
+		printf("| %c | %c | %c | | 0 | 1 | 2 |\n----------\n", state[0], state[1], state[2]);
+		printf("| %c | %c | %c | | 3 | 4 | 5 |\n----------\n", state[3], state[4], state[5]);
+		printf("| %c | %c | %c | | 6 | 7 | 8 |\n----------\n", state[6], state[7], state[8]);
+
+		int id = -1;
+
+		printf("Next move\n> ");
+		scanf("%d", &id);
+
+		while (!chosenTile(id)) {
+			printf("Invalid input. Next move\n> ");
+			scanf("%d", &id);
+		}
+	}
+	if (!isDraw()) {
+		char *state = board.getTilesState();
+		printf("\n-------------\n");
+		printf("| %c | %c | %c |\n----------\n", state[0], state[1], state[2]);
+		printf("| %c | %c | %c |\n----------\n", state[3], state[4], state[5]);
+		printf("| %c | %c | %c |\n----------\n", state[6], state[7], state[8]);
+
+		printf("\nPlayer %c won\n", getWinner());
+	} else {
+		printf("\nGame ended with a draw\n");
+	}
+}
+
 void Game::restart() {
 	curr_player = Player::O;
 	lastTile = -1;
@@ -15,9 +50,9 @@ void Game::restart() {
 	board.setTilesState();
 }
 
-void Game::clickedTile(float x, float y) {
+bool Game::chosenTile(float x, float y) {
 	if (!active) {
-		return;
+		return false;
 	}
 
 	int col = board.getTileCol(x);
@@ -26,9 +61,23 @@ void Game::clickedTile(float x, float y) {
 
 	if (board.takeTile(tileId, curr_player)) {
 		swapPlayer();
+		lastTile = tileId;
+		return true;
+	}
+	return false;
+}
+
+bool Game::chosenTile(int tileId) {
+	if (!active) {
+		return false;
 	}
 
-	lastTile = tileId;
+	if (board.takeTile(tileId, curr_player)) {
+		swapPlayer();
+		lastTile = tileId;
+		return true;
+	}
+	return false;
 }
 
 void Game::swapPlayer() {
@@ -131,7 +180,7 @@ bool Game::isDraw() {
 	return true;
 }
 
-short Game::getPlayer() { return curr_player; }
+char Game::getPlayer() { return curr_player; }
 
 short Game::getWinner() { return winner; }
 
