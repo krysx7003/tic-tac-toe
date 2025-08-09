@@ -5,6 +5,7 @@
 
 #include "include/glad/glad.h"
 #include <GLFW/glfw3.h>
+#include <cstdio>
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -19,31 +20,23 @@ class Board {
 	std::vector<glm ::vec3> tiles;
 	GLuint VAO_lines, VBO_lines;
 	GLuint VAO_tiles, VBO_tiles;
-	short curr_player;
+	bool boardGui = false;
 
 	void addTile(int row, int col);
 
   public:
-	short tiles_state[BOARD_SIZE];
+	char tiles_state[BOARD_SIZE];
 
-	Board();
+	Board(bool gui);
+	Board() {};
 
 	void setupBuffers();
 	void render(GLuint shaderProgram);
-	void swapPlayer();
-	bool takeTile(int pos);
+	bool takeTile(int pos, short player);
+	void setTilesState();
 
-	short *getTilesState();
+	char *getTilesState();
 	int getSize();
 	int getTileCol(float pos);
 	int getTileRow(float pos);
-	short getPlayer();
-
-	~Board() {
-		glDeleteVertexArrays(1, &VAO_lines);
-		glDeleteBuffers(1, &VBO_lines);
-
-		glDeleteVertexArrays(1, &VAO_tiles);
-		glDeleteBuffers(1, &VBO_tiles);
-	}
 };

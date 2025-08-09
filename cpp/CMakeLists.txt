@@ -27,6 +27,7 @@ set(GLAD_SOURCE src/include/glad.c)
 
 add_executable(tic-tac-toe
     src/main.cpp
+    src/game.cpp
     src/board.cpp
     ${IMGUI_SOURCES}
     ${GLAD_SOURCE}
@@ -47,6 +48,6 @@ set_target_properties(tic-tac-toe PROPERTIES
 
 # Compiler options
 target_compile_options(tic-tac-toe PRIVATE
-    -O0
+    -O3
     -march=x86-64
 )

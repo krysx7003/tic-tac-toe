@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 
 #include "include/glad/glad.h"
@@ -7,7 +6,7 @@
 #include "include/imgui/imgui.h"
 #include <GLFW/glfw3.h>
 
-#include "board.h"
+#include "game.h"
 
 using namespace std;
 
@@ -26,10 +25,9 @@ const char *fragmentShaderSource = "#version 330 core\n"
 								   "}\n\0";
 
 GLuint init_shader();
-Board board = Board();
+Game game;
 double currX, currY;
 int click_count = 0;
-int tileId = -1;
 
 void render(GLFWwindow *window, GLuint shaderProgram);
 void render_debug_frame(GLFWwindow *window);
@@ -44,6 +42,7 @@ int main(int argc, char *argv[]) {
 			gui = false;
 		}
 	}
+
 	if (gui) {
 		if (!glfwInit())
 			return -1;
@@ -68,8 +67,7 @@ int main(int argc, char *argv[]) {
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 130");
-
-		board.setupBuffers();
+		game = Game(gui);
 
 		glfwSetCursorPosCallback(window, cursor_position_callback);
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -93,7 +91,7 @@ void render(GLFWwindow *window, GLuint shaderProgram) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	board.render(shaderProgram);
+	game.board.render(shaderProgram);
 
 	render_debug_frame(window);
 
@@ -107,20 +105,24 @@ void render_debug_frame(GLFWwindow *window) {
 	ImGui::NewFrame();
 
 	ImGui::Begin("Debug");
-	if (ImGui::Button("Close")) {
-		glfwSetWindowShouldClose(window, true);
-	}
 
-	ImGui::Text("Vertices: %d", board.getSize());
 	ImGui::Text("Click count: %d", click_count);
 	ImGui::Text("Position x: %.2f, y: %.2f", currX, currY);
-	ImGui::Text("Clicked tile: %d", tileId);
-	ImGui::Text("Current player: %d", board.getPlayer());
+	ImGui::Text("Clicked tile: %d", game.getLastTile());
+	ImGui::Text("Current player: %d", game.getPlayer());
 
-	short *state = board.getTilesState();
-	ImGui::Text("| %d | %d | %d |\n-------------", state[0], state[1], state[2]);
-	ImGui::Text("| %d | %d | %d |\n-------------", state[3], state[4], state[5]);
-	ImGui::Text("| %d | %d | %d |\n-------------", state[6], state[7], state[8]);
+	char *state = game.board.getTilesState();
+	ImGui::Text("| %c | %c | %c |\n-------------", state[0], state[1], state[2]);
+	ImGui::Text("| %c | %c | %c |\n-------------", state[3], state[4], state[5]);
+	ImGui::Text("| %c | %c | %c |\n-------------", state[6], state[7], state[8]);
+
+	if (!game.active) {
+		ImGui::Text("Game ended winner: %d", game.getWinner());
+	}
+
+	if (ImGui::Button("Restart")) {
+		game.restart();
+	}
 
 	ImGui::End();
 	ImGui::Render();
@@ -146,13 +148,7 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		click_count++;
 
-		int col = board.getTileCol(currX);
-		int row = board.getTileRow(currY) * 3;
-		tileId = col + row;
-
-		if (board.takeTile(tileId)) {
-			board.swapPlayer();
-		}
+		game.clickedTile(currX, currY);
 	}
 }
 

@@ -2,7 +2,7 @@
 
 class TileState {
   public:
-	static const short Empty = 0;
-	static const short TakenX = 1;
-	static const short TakenO = 2;
+	static const char Empty = ' ';
+	static const char TakenX = 'X';
+	static const char TakenO = 'O';
 };
