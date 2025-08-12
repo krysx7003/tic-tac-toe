@@ -182,6 +182,6 @@ bool Game::isDraw() {
 
 char Game::getPlayer() { return curr_player; }
 
-short Game::getWinner() { return winner; }
+char Game::getWinner() { return winner; }
 
 short Game::getLastTile() { return lastTile; }

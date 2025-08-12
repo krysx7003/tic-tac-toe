@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <cstdlib>
-#include <ostream>
 #include <string>
 
 #include "include/glad/glad.h"
@@ -10,29 +9,15 @@
 #include <GLFW/glfw3.h>
 
 #include "game.h"
+#include "include/utils/resource_manager.h"
 
 using namespace std;
 
-const char *vertexShaderSource = "#version 330 core\n"
-								 "layout (location = 0) in vec3 aPos;\n"
-								 "void main()\n"
-								 "{\n"
-								 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-								 "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-								   "out vec4 FragColor;\n"
-								   "uniform vec3 ourColor;\n"
-								   "void main()\n"
-								   "{\n"
-								   "   FragColor = vec4(ourColor, 1.0f);\n"
-								   "}\n\0";
-
-GLuint init_shader();
 Game game;
 double currX, currY;
 int click_count = 0;
 
-void render(GLFWwindow *window, GLuint shaderProgram);
+void render(GLFWwindow *window);
 void render_debug_frame(GLFWwindow *window);
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
@@ -63,7 +48,7 @@ int main(int argc, char *argv[]) {
 			return -1;
 		}
 
-		GLuint shaderProgram = init_shader();
+		ResourceManager::LoadShader("../shaders/tile.vs", "../shaders/tile.frag", "tile");
 
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -77,13 +62,12 @@ int main(int argc, char *argv[]) {
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 		while (!glfwWindowShouldClose(window)) {
-			render(window, shaderProgram);
+			render(window);
 		}
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 
-		glDeleteProgram(shaderProgram);
 		glfwDestroyWindow(window);
 
 		glfwTerminate();
@@ -118,11 +102,11 @@ bool isValidInput(char c) {
 	return false;
 }
 
-void render(GLFWwindow *window, GLuint shaderProgram) {
+void render(GLFWwindow *window) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	game.board.render(shaderProgram);
+	game.board.render();
 
 	render_debug_frame(window);
 
@@ -140,7 +124,7 @@ void render_debug_frame(GLFWwindow *window) {
 	ImGui::Text("Click count: %d", click_count);
 	ImGui::Text("Position x: %.2f, y: %.2f", currX, currY);
 	ImGui::Text("Clicked tile: %d", game.getLastTile());
-	ImGui::Text("Current player: %d", game.getPlayer());
+	ImGui::Text("Current player: %c", game.getPlayer());
 
 	char *state = game.board.getTilesState();
 	ImGui::Text("| %c | %c | %c |\n-------------", state[0], state[1], state[2]);
@@ -180,23 +164,4 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 		click_count++;
 		game.chosenTile(currX, currY);
 	}
-}
-
-GLuint init_shader() {
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	return shaderProgram;
 }

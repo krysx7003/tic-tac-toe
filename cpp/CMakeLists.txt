@@ -23,12 +23,19 @@ set(IMGUI_SOURCES
     src/include/imgui/backends/imgui_impl_opengl3.cpp
 )
 
+set(UTIL_SOURCES
+    src/include/utils/shader.cpp
+    src/include/utils/texture.cpp
+    src/include/utils/resource_manager.cpp
+)
+
 set(GLAD_SOURCE src/include/glad.c)
 
 add_executable(tic-tac-toe
     src/main.cpp
     src/game.cpp
     src/board.cpp
+    ${UTIL_SOURCES}
     ${IMGUI_SOURCES}
     ${GLAD_SOURCE}
 )

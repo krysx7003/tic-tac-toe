@@ -31,7 +31,7 @@ class Board {
 	Board();
 
 	void setupBuffers();
-	void render(GLuint shaderProgram);
+	void render();
 	bool takeTile(int pos, char player);
 	void setTilesState();
 

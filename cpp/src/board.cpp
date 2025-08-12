@@ -1,5 +1,8 @@
 #include "board.h"
 
+#include "include/utils/resource_manager.h"
+#include "include/utils/shader.h"
+
 #include <GLFW/glfw3.h>
 
 Board::Board(bool gui) {
@@ -35,17 +38,16 @@ void Board::setTilesState() {
 	}
 }
 
-void Board::render(GLuint shaderProgram) {
-	GLint colorLoc = glGetUniformLocation(shaderProgram, "ourColor");
-	glUseProgram(shaderProgram);
+void Board::render() {
+	Shader shader = ResourceManager::GetShader("tile").Use();
 
-	glUniform3f(colorLoc, 1.0f, 1.0f, 1.0f);
+	shader.SetVector3f("ourColor", 1.0f, 1.0f, 1.0f, false);
 	glBindVertexArray(VAO_tiles);
 	glDrawArrays(GL_TRIANGLES, 0, tiles.size());
 
-	glUniform3f(colorLoc, 0.0f, 0.0f, 0.0f);
-	glLineWidth(3.0f);
+	shader.SetVector3f("ourColor", 0.0f, 0.0f, 0.0f, false);
 	glBindVertexArray(VAO_lines);
+	glLineWidth(10.0f);
 	glDrawArrays(GL_LINES, 0, grid.size());
 }
 
