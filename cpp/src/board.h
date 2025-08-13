@@ -1,5 +1,6 @@
 #pragma once
 
+#include "include/utils/sprite.h"
 #include "player.h"
 #include "tile.h"
 
@@ -14,13 +15,17 @@ using namespace std;
 const int BOARD_SIZE = 9;
 const int BOARD_WIDTH = 3;
 const float TILE_SIZE = 2.0f / BOARD_WIDTH;
+const float TILE_WIDTH = 200.0f;
+const glm::vec2 TILE_SIZE_PX = glm::vec2(TILE_WIDTH, TILE_WIDTH);
 
 class Board {
 	std::vector<glm ::vec3> grid;
 	std::vector<glm ::vec3> tiles;
+	std::vector<glm ::vec2> tiles_pos;
 	GLuint VAO_lines, VBO_lines;
 	GLuint VAO_tiles, VBO_tiles;
 	bool boardGui = false;
+	SpriteRenderer *Renderer;
 
 	void addTile(int row, int col);
 

@@ -27,6 +27,7 @@ set(UTIL_SOURCES
     src/include/utils/shader.cpp
     src/include/utils/texture.cpp
     src/include/utils/resource_manager.cpp
+    src/include/utils/sprite.cpp
 )
 
 set(GLAD_SOURCE src/include/glad.c)

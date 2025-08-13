@@ -2,6 +2,7 @@
 
 #include "include/utils/resource_manager.h"
 #include "include/utils/shader.h"
+#include "include/utils/texture.h"
 
 #include <GLFW/glfw3.h>
 
@@ -13,6 +14,7 @@ Board::Board(bool gui) {
 		for (int row = 0; row < BOARD_WIDTH; row++) {
 			for (int col = 0; col < BOARD_WIDTH; col++) {
 				addTile(row, col);
+				tiles_pos.push_back({col * 200, row * 200});
 			}
 		}
 
@@ -25,6 +27,12 @@ Board::Board(bool gui) {
 		grid.push_back({-1.0f, 1.0f / 3, 0.0f});
 		grid.push_back({1.0f, -1.0f / 3, 0.0f});
 		grid.push_back({-1.0f, -1.0f / 3, 0.0f});
+
+		glm::mat4 projection =
+			glm::ortho(0.0f, static_cast<float>(600), static_cast<float>(600), 0.0f, -1.0f, 1.0f);
+		ResourceManager::GetShader("piece").Use().SetInteger("image", 0);
+		ResourceManager::GetShader("piece").SetMatrix4("projection", projection);
+		Renderer = new SpriteRenderer(ResourceManager::GetShader("piece"));
 	}
 }
 
@@ -39,13 +47,36 @@ void Board::setTilesState() {
 }
 
 void Board::render() {
-	Shader shader = ResourceManager::GetShader("tile").Use();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	shader.SetVector3f("ourColor", 1.0f, 1.0f, 1.0f, false);
-	glBindVertexArray(VAO_tiles);
-	glDrawArrays(GL_TRIANGLES, 0, tiles.size());
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		if (tiles_state[i] == TileState::Empty) {
+			continue;
+		}
+		Texture2D texture;
+		if (tiles_state[i] == TileState::TakenO) {
+			texture = ResourceManager::GetTexture("O");
 
-	shader.SetVector3f("ourColor", 0.0f, 0.0f, 0.0f, false);
+		} else {
+			texture = ResourceManager::GetTexture("X");
+		}
+
+		Renderer->DrawSprite(texture, tiles_pos[i], TILE_SIZE_PX, 0.0f,
+							 glm::vec3(0.0f, 0.0f, 0.0f));
+	}
+
+	// Shader shader = ResourceManager::GetShader("tile").Use();
+	//
+	// glBindVertexArray(VAO_tiles);
+	// for (int i = 0; i < BOARD_SIZE; i++) {
+	// 	shader.SetVector3f("ourColor", 1.0f, 1.0f, 1.0f, false);
+	// 	glDrawArrays(GL_TRIANGLES, i * 6, 6);
+	// }
+
+	Shader line_shader = ResourceManager::GetShader("line").Use();
+
+	line_shader.SetVector3f("ourColor", 0.0f, 0.0f, 0.0f, false);
 	glBindVertexArray(VAO_lines);
 	glLineWidth(10.0f);
 	glDrawArrays(GL_LINES, 0, grid.size());

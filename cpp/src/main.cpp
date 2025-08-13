@@ -48,7 +48,12 @@ int main(int argc, char *argv[]) {
 			return -1;
 		}
 
-		ResourceManager::LoadShader("../shaders/tile.vs", "../shaders/tile.frag", "tile");
+		ResourceManager::LoadShader("../shaders/line.vs", "../shaders/line.frag", "line");
+		// ResourceManager::LoadShader("../shaders/tile.vs", "../shaders/tile.frag", "tile");
+		ResourceManager::LoadShader("../shaders/piece.vs", "../shaders/piece.frag", "piece");
+
+		ResourceManager::LoadTexture("../textures/X.png", true, "X");
+		ResourceManager::LoadTexture("../textures/O.png", true, "O");
 
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -103,7 +108,7 @@ bool isValidInput(char c) {
 }
 
 void render(GLFWwindow *window) {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	game.board.render();
