@@ -1,4 +1,5 @@
-**/build/*
+**/build/release/*
+**/build/debug/*
 
 !**/build/textures/*
 !**/build/shaders/*
