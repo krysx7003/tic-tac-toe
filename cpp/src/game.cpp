@@ -1,5 +1,8 @@
+#include "include/utils/resource_manager.h"
+
 #include "game.h"
 #include "tile.h"
+#include <glm/ext/vector_float2.hpp>
 
 Game::Game(bool gui) {
 	curr_player = Player::O;
@@ -38,6 +41,14 @@ void Game::start() {
 		printf("\nPlayer %c won\n", getWinner());
 	} else {
 		printf("\nGame ended with a draw\n");
+	}
+}
+
+void Game::render() {
+	board.render();
+
+	if (!active) {
+		board.renderWin(ResourceManager::GetTexture(texture), texture_pos, texture_size);
 	}
 }
 
@@ -132,6 +143,11 @@ bool Game::verticalLine(int col) {
 	}
 
 	setWinner(first);
+
+	texture = "vertical";
+	texture_pos = glm::vec2(col * 200, 0);
+	texture_size = glm::vec2(200, 600);
+
 	return true;
 }
 
@@ -146,6 +162,11 @@ bool Game::horizontalLine(int row) {
 	}
 
 	setWinner(first);
+
+	texture = "horizontal";
+	texture_pos = glm::vec2(0, row * 200);
+	texture_size = glm::vec2(600, 200);
+
 	return true;
 }
 
@@ -154,6 +175,10 @@ bool Game::diagonalLeftLine() {
 	if (topLeft != TileState::Empty) {
 		if (board.tiles_state[4] == topLeft && board.tiles_state[8] == topLeft) {
 			setWinner(topLeft);
+			texture = "diagonal_l";
+			texture_pos = glm::vec2(0, 0);
+			texture_size = glm::vec2(600, 600);
+
 			return true;
 		}
 	}
@@ -164,6 +189,10 @@ bool Game::diagonalRightLine() {
 	if (topRight != TileState::Empty) {
 		if (board.tiles_state[4] == topRight && board.tiles_state[6] == topRight) {
 			setWinner(topRight);
+			texture = "diagonal_r";
+			texture_pos = glm::vec2(0, 0);
+			texture_size = glm::vec2(600, 600);
+
 			return true;
 		}
 	}

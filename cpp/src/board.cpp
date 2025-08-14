@@ -82,6 +82,12 @@ void Board::render() {
 	glDrawArrays(GL_LINES, 0, grid.size());
 }
 
+void Board::renderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size) {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	Renderer->DrawSprite(win_texture, texture_pos, texture_size, 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+}
+
 void Board::setupBuffers() {
 	glGenVertexArrays(1, &VAO_lines);
 	glGenBuffers(1, &VBO_lines);

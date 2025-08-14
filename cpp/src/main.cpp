@@ -55,6 +55,11 @@ int main(int argc, char *argv[]) {
 		ResourceManager::LoadTexture("../textures/X.png", true, "X");
 		ResourceManager::LoadTexture("../textures/O.png", true, "O");
 
+		ResourceManager::LoadTexture("../textures/h_line.png", true, "horizontal");
+		ResourceManager::LoadTexture("../textures/v_line.png", true, "vertical");
+		ResourceManager::LoadTexture("../textures/d_r_line.png", true, "diagonal_r");
+		ResourceManager::LoadTexture("../textures/d_l_line.png", true, "diagonal_l");
+
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
@@ -111,7 +116,7 @@ void render(GLFWwindow *window) {
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	game.board.render();
+	game.render();
 
 	render_debug_frame(window);
 

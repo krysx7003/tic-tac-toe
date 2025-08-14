@@ -37,6 +37,7 @@ class Board {
 
 	void setupBuffers();
 	void render();
+	void renderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size);
 	bool takeTile(int pos, char player);
 	void setTilesState();
 
