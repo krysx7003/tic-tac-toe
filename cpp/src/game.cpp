@@ -1,4 +1,4 @@
-#include "include/utils/resource_manager.h"
+#include "utils/resource_manager.h"
 
 #include "game.h"
 #include "tile.h"
@@ -7,7 +7,7 @@
 Game::Game(bool gui) {
 	curr_player = Player::O;
 	board = Board(gui);
-	board.setupBuffers();
+	board.SetupBuffers();
 }
 
 void Game::start() {
@@ -15,7 +15,7 @@ void Game::start() {
 		system("clear");
 
 		printf("Current player: %c", getPlayer());
-		char *state = board.getTilesState();
+		char *state = board.GetTilesState();
 		printf("\n-------------\n");
 		printf("| %c | %c | %c | | 0 | 1 | 2 |\n----------\n", state[0], state[1], state[2]);
 		printf("| %c | %c | %c | | 3 | 4 | 5 |\n----------\n", state[3], state[4], state[5]);
@@ -32,7 +32,7 @@ void Game::start() {
 		}
 	}
 	if (!isDraw()) {
-		char *state = board.getTilesState();
+		char *state = board.GetTilesState();
 		printf("\n-------------\n");
 		printf("| %c | %c | %c |\n----------\n", state[0], state[1], state[2]);
 		printf("| %c | %c | %c |\n----------\n", state[3], state[4], state[5]);
@@ -45,10 +45,10 @@ void Game::start() {
 }
 
 void Game::render() {
-	board.render();
+	board.Render();
 
 	if (!active) {
-		board.renderWin(ResourceManager::GetTexture(texture), texture_pos, texture_size);
+		board.RenderWin(ResourceManager::GetTexture(texture), texture_pos, texture_size);
 	}
 }
 
@@ -58,7 +58,7 @@ void Game::restart() {
 	winner = -1;
 	active = true;
 
-	board.setTilesState();
+	board.SetTilesState();
 }
 
 bool Game::chosenTile(float x, float y) {
@@ -66,11 +66,11 @@ bool Game::chosenTile(float x, float y) {
 		return false;
 	}
 
-	int col = board.getTileCol(x);
-	int row = board.getTileRow(y) * 3;
+	int col = board.GetTileCol(x);
+	int row = board.GetTileRow(y) * 3;
 	int tileId = col + row;
 
-	if (board.takeTile(tileId, curr_player)) {
+	if (board.TakeTile(tileId, curr_player)) {
 		swapPlayer();
 		lastTile = tileId;
 		return true;
@@ -83,7 +83,7 @@ bool Game::chosenTile(int tileId) {
 		return false;
 	}
 
-	if (board.takeTile(tileId, curr_player)) {
+	if (board.TakeTile(tileId, curr_player)) {
 		swapPlayer();
 		lastTile = tileId;
 		return true;

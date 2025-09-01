@@ -2,15 +2,16 @@
 #include <cstdlib>
 #include <string>
 
-#include "include/glad/glad.h"
-#include "include/imgui/backends/imgui_impl_glfw.h"
-#include "include/imgui/backends/imgui_impl_opengl3.h"
-#include "include/imgui/imgui.h"
+#include "thirdparty/glad/glad.h"
+#include "thirdparty/imgui/backends/imgui_impl_glfw.h"
+#include "thirdparty/imgui/backends/imgui_impl_opengl3.h"
+#include "thirdparty/imgui/imgui.h"
 #include <GLFW/glfw3.h>
 
 #include "game.h"
-#include "include/utils/resource_manager.h"
+#include "utils/resource_manager.h"
 
+using json = nlohmann::json;
 using namespace std;
 
 Game game;
@@ -23,42 +24,43 @@ static void cursor_position_callback(GLFWwindow *window, double xpos, double ypo
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 bool isValidInput(char c);
 
-int main(int argc, char *argv[]) {
-	bool gui = true;
-	if (argc >= 2) {
-		string gui_arg = argv[1];
-		if (gui_arg == "false") {
-			gui = false;
-		}
-	}
+int main() {
+
+	bool gui = ResourceManager::LoadConfig()["gui"];
 
 	if (gui) {
-		if (!glfwInit())
-			return -1;
+		if (!glfwInit()) {
+			printf("ERROR::INIT: Failed to init glfw\n");
+			exit(-1);
+		}
 
-		GLFWwindow *window = glfwCreateWindow(600, 600, "Tic-Tac-Toe", NULL, NULL);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+		GLFWwindow *window = glfwCreateWindow(600, 600, "Nap_Nap Tic-Tac-Toe", NULL, NULL);
 		if (!window) {
 			glfwTerminate();
-			return -1;
+			printf("ERROR::INIT: Failed to create window\n");
+			exit(-1);
 		}
 		glfwMakeContextCurrent(window);
 
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 			glfwTerminate();
-			return -1;
+			printf("ERROR::INIT: Failed to get proc address\n");
+			exit(-1);
 		}
 
-		ResourceManager::LoadShader("../shaders/line.vs", "../shaders/line.frag", "line");
-		// ResourceManager::LoadShader("../shaders/tile.vs", "../shaders/tile.frag", "tile");
-		ResourceManager::LoadShader("../shaders/piece.vs", "../shaders/piece.frag", "piece");
+		ResourceManager::LoadShader("line.vs", "line.frag", "line");
+		// ResourceManager::LoadShader("tile.vs", "tile.frag", "tile");
+		ResourceManager::LoadShader("piece.vs", "piece.frag", "piece");
 
-		ResourceManager::LoadTexture("../textures/X.png", true, "X");
-		ResourceManager::LoadTexture("../textures/O.png", true, "O");
+		ResourceManager::LoadTexture("X.png", true, "X");
+		ResourceManager::LoadTexture("O.png", true, "O");
 
-		ResourceManager::LoadTexture("../textures/h_line.png", true, "horizontal");
-		ResourceManager::LoadTexture("../textures/v_line.png", true, "vertical");
-		ResourceManager::LoadTexture("../textures/d_r_line.png", true, "diagonal_r");
-		ResourceManager::LoadTexture("../textures/d_l_line.png", true, "diagonal_l");
+		ResourceManager::LoadTexture("h_line.png", true, "horizontal");
+		ResourceManager::LoadTexture("v_line.png", true, "vertical");
+		ResourceManager::LoadTexture("d_r_line.png", true, "diagonal_r");
+		ResourceManager::LoadTexture("d_l_line.png", true, "diagonal_l");
 
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -136,7 +138,7 @@ void render_debug_frame(GLFWwindow *window) {
 	ImGui::Text("Clicked tile: %d", game.getLastTile());
 	ImGui::Text("Current player: %c", game.getPlayer());
 
-	char *state = game.board.getTilesState();
+	char *state = game.board.GetTilesState();
 	ImGui::Text("| %c | %c | %c |\n-------------", state[0], state[1], state[2]);
 	ImGui::Text("| %c | %c | %c |\n-------------", state[3], state[4], state[5]);
 	ImGui::Text("| %c | %c | %c |\n-------------", state[6], state[7], state[8]);

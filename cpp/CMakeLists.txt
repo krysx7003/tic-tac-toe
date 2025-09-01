@@ -9,28 +9,28 @@ find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
 include_directories(
-    src/include
-    src/include/imgui
-    src/include/imgui/backends
+    src/thirdparty
+    src/thirdparty/imgui
+    src/thirdparty/imgui/backends
 )
 
 set(IMGUI_SOURCES
-    src/include/imgui/imgui.cpp
-    src/include/imgui/imgui_draw.cpp
-    src/include/imgui/imgui_tables.cpp
-    src/include/imgui/imgui_widgets.cpp
-    src/include/imgui/backends/imgui_impl_glfw.cpp
-    src/include/imgui/backends/imgui_impl_opengl3.cpp
+    src/thirdparty/imgui/imgui.cpp
+    src/thirdparty/imgui/imgui_draw.cpp
+    src/thirdparty/imgui/imgui_tables.cpp
+    src/thirdparty/imgui/imgui_widgets.cpp
+    src/thirdparty/imgui/backends/imgui_impl_glfw.cpp
+    src/thirdparty/imgui/backends/imgui_impl_opengl3.cpp
 )
 
 set(UTIL_SOURCES
-    src/include/utils/shader.cpp
-    src/include/utils/texture.cpp
-    src/include/utils/resource_manager.cpp
-    src/include/utils/sprite.cpp
+    src/utils/shader.cpp
+    src/utils/texture.cpp
+    src/utils/resource_manager.cpp
+    src/utils/sprite.cpp
 )
 
-set(GLAD_SOURCE src/include/glad.c)
+set(GLAD_SOURCE src/thirdparty/glad.c)
 
 add_executable(tic-tac-toe
     src/main.cpp

@@ -10,8 +10,9 @@
 
 std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
+json ResourceManager::Config;
 
-Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile,
+Shader ResourceManager::LoadShader(std::string vShaderFile, std::string fShaderFile,
 								   std::string name) {
 	Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile);
 	return Shaders[name];
@@ -19,12 +20,17 @@ Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderF
 
 Shader ResourceManager::GetShader(std::string name) { return Shaders[name]; }
 
-Texture2D ResourceManager::LoadTexture(const char *file, bool alpha, std::string name) {
+Texture2D ResourceManager::LoadTexture(std::string file, bool alpha, std::string name) {
 	Textures[name] = loadTextureFromFile(file, alpha);
 	return Textures[name];
 }
 
 Texture2D ResourceManager::GetTexture(std::string name) { return Textures[name]; }
+
+json ResourceManager::LoadConfig() {
+	Config = loadConfigFromFile();
+	return Config;
+}
 
 void ResourceManager::Clear() {
 	for (auto iter : Shaders)
@@ -34,12 +40,15 @@ void ResourceManager::Clear() {
 		glDeleteTextures(1, &iter.second.ID);
 }
 
-Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *fShaderFile) {
+Shader ResourceManager::loadShaderFromFile(std::string vShaderFile, std::string fShaderFile) {
+	std::string vShaderPath = ShadersDir + vShaderFile;
+	std::string fShaderPath = ShadersDir + fShaderFile;
+
 	std::string vertexCode;
 	std::string fragmentCode;
 	try {
-		std::ifstream vertexShaderFile(vShaderFile);
-		std::ifstream fragmentShaderFile(fShaderFile);
+		std::ifstream vertexShaderFile(vShaderPath);
+		std::ifstream fragmentShaderFile(fShaderPath);
 		std::stringstream vShaderStream, fShaderStream;
 
 		vShaderStream << vertexShaderFile.rdbuf();
@@ -52,7 +61,7 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
 		fragmentCode = fShaderStream.str();
 
 	} catch (std::exception e) {
-		std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
+		printf("ERROR::SHADER: Failed to read shader files\n");
 	}
 	const char *vShaderCode = vertexCode.c_str();
 	const char *fShaderCode = fragmentCode.c_str();
@@ -62,7 +71,9 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
 	return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha) {
+Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha) {
+	std::string TexturePath = TexturesDir + file;
+
 	Texture2D texture;
 	if (alpha) {
 		texture.Internal_Format = GL_RGBA;
@@ -70,10 +81,22 @@ Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha) {
 	}
 
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load(file, &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load(TexturePath.c_str(), &width, &height, &nrChannels, 0);
 
 	texture.Generate(width, height, data);
 
 	stbi_image_free(data);
 	return texture;
+}
+
+json ResourceManager::loadConfigFromFile() {
+	std::ifstream file(ConfigPath);
+	json config;
+	if (file.is_open()) {
+		file >> config;
+		return config;
+	} else {
+		printf("ERROR::CONFIG: Failed to open cofig file\n");
+		exit(-1);
+	}
 }

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "include/utils/sprite.h"
 #include "player.h"
 #include "tile.h"
+#include "utils/sprite.h"
 
-#include "include/glad/glad.h"
+#include "thirdparty/glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <glm/glm.hpp>
@@ -27,7 +27,7 @@ class Board {
 	bool boardGui = false;
 	SpriteRenderer *Renderer;
 
-	void addTile(int row, int col);
+	void AddTile(int row, int col);
 
   public:
 	char tiles_state[BOARD_SIZE];
@@ -35,14 +35,14 @@ class Board {
 	Board(bool gui);
 	Board();
 
-	void setupBuffers();
-	void render();
-	void renderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size);
-	bool takeTile(int pos, char player);
-	void setTilesState();
+	void SetupBuffers();
+	void Render();
+	void RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size);
+	bool TakeTile(int pos, char player);
+	void SetTilesState();
 
-	char *getTilesState();
-	int getSize();
-	int getTileCol(float pos);
-	int getTileRow(float pos);
+	char *GetTilesState();
+	int GetSize();
+	int GetTileCol(float pos);
+	int GetTileRow(float pos);
 };

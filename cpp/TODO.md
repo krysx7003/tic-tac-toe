@@ -10,11 +10,14 @@
 - [x] Add game rules
 - [x] Add win condition
 - [x] Make game playable without GUI
-- [ ] Start game in i3 floating mode
-- [ ] Override ability to resize window
-- [ ] Replace commandline args with config.json
-- [ ] Symlink ./resources to build dirs
-- [ ] Remove includes dir
+- [x] Start game in i3 floating mode
+- [x] Override ability to resize window
+- [x] Replace commandline args with config.json
+- [x] Symlink ./resources to build dirs
+- [x] Remove includes dir
+- [ ] Methods should start from uppercase
+- [ ] Move game logic form main to Game
+- [ ] Move tile related logic to Tile
 - [ ] Yoink TetxRenderer
 - [ ] Make window/menu class(Custom shape rectangle)
 - [ ] Make button class(Custom shape rectangle, changes color when mouse is
@@ -25,9 +28,6 @@
 - [ ] Open pause menu either by ESC or button
 - [ ] Add pause menu(Resume, Restart, Exit)
 - [ ] Add end game menu
-- [ ] Methods should start from uppercase
-- [ ] Move game logic form main to Game
-- [ ] Move tile related logic to Tile
 
 ## Game rules
 

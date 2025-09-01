@@ -1,19 +1,19 @@
 #include "board.h"
 
-#include "include/utils/resource_manager.h"
-#include "include/utils/shader.h"
-#include "include/utils/texture.h"
+#include "utils/resource_manager.h"
+#include "utils/shader.h"
+#include "utils/texture.h"
 
 #include <GLFW/glfw3.h>
 
 Board::Board(bool gui) {
 	boardGui = gui;
-	setTilesState();
+	SetTilesState();
 
 	if (boardGui) {
 		for (int row = 0; row < BOARD_WIDTH; row++) {
 			for (int col = 0; col < BOARD_WIDTH; col++) {
-				addTile(row, col);
+				AddTile(row, col);
 				tiles_pos.push_back({col * 200, row * 200});
 			}
 		}
@@ -36,9 +36,9 @@ Board::Board(bool gui) {
 	}
 }
 
-Board::Board() { setTilesState(); }
+Board::Board() { SetTilesState(); }
 
-void Board::setTilesState() {
+void Board::SetTilesState() {
 	for (int row = 0; row < BOARD_WIDTH; row++) {
 		for (int col = 0; col < BOARD_WIDTH; col++) {
 			tiles_state[(row * 3) + col] = TileState::Empty;
@@ -46,7 +46,7 @@ void Board::setTilesState() {
 	}
 }
 
-void Board::render() {
+void Board::Render() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -82,13 +82,13 @@ void Board::render() {
 	glDrawArrays(GL_LINES, 0, grid.size());
 }
 
-void Board::renderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size) {
+void Board::RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	Renderer->DrawSprite(win_texture, texture_pos, texture_size, 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
-void Board::setupBuffers() {
+void Board::SetupBuffers() {
 	glGenVertexArrays(1, &VAO_lines);
 	glGenBuffers(1, &VBO_lines);
 
@@ -112,7 +112,7 @@ void Board::setupBuffers() {
 	glBindVertexArray(0);
 }
 
-void Board::addTile(int row, int col) {
+void Board::AddTile(int row, int col) {
 	GLfloat left = -1.0f + TILE_SIZE * col;
 	GLfloat right = left + TILE_SIZE;
 	GLfloat top = 1.0f - TILE_SIZE * row;
@@ -127,7 +127,7 @@ void Board::addTile(int row, int col) {
 	tiles.push_back({left, bottom, 0.0f});
 }
 
-bool Board::takeTile(int pos, char player) {
+bool Board::TakeTile(int pos, char player) {
 	if (tiles_state[pos] != TileState::Empty) {
 		return false;
 	}
@@ -139,7 +139,7 @@ bool Board::takeTile(int pos, char player) {
 	return true;
 }
 
-int Board::getTileCol(float pos) {
+int Board::GetTileCol(float pos) {
 	if (pos <= -0.33f)
 		return 0;
 	if (pos < 0.33f && pos > -0.33f)
@@ -150,7 +150,7 @@ int Board::getTileCol(float pos) {
 	return -1;
 }
 
-int Board::getTileRow(float pos) {
+int Board::GetTileRow(float pos) {
 	if (pos >= 0.33f)
 		return 0;
 	if (pos < 0.33f && pos > -0.33f)
@@ -161,6 +161,6 @@ int Board::getTileRow(float pos) {
 	return -1;
 }
 
-int Board::getSize() { return tiles.size(); }
+int Board::GetSize() { return tiles.size(); }
 
-char *Board::getTilesState() { return tiles_state; }
+char *Board::GetTilesState() { return tiles_state; }
