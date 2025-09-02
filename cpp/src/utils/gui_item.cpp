@@ -1,5 +1,4 @@
 #include "gui_item.h"
-#include "resource_manager.h"
 #include "shader.h"
 
 void Gui_Item::drawSquare() {

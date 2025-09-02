@@ -1,11 +1,11 @@
 {
     "gui": true,
     "pretty_print": false,
-    "name": "",
+    "name": "Tic-Tac-Toe",
     "window":{
         "width": 600,
-        "height": 640,
-        "i3-prefix": ""
+        "height": 630,
+        "i3-prefix": "Nap_Nap"
     },
     "main_menu":{
         "width": 600,
@@ -13,7 +13,7 @@
     },
     "top_menu":{
         "width": 600,
-        "height": 40
+        "height": 30
     },
     "board":{
         "tiles_num" : 9,

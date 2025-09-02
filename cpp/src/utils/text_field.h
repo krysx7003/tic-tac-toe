@@ -6,7 +6,7 @@ class Text_Field : public Gui_Item {
 	std::string Text;
 
   public:
-	Text_Field(float width, float height, float start_pos_x, float start_pos_y, std::string text)
+	Text_Field(int width, int height, int start_pos_x, int start_pos_y, std::string text)
 		: Gui_Item(width, height, start_pos_x, start_pos_y) {
 		// Implement text stuff
 	}

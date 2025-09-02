@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cstdio>
 #include <glm/ext/vector_float3.hpp>
 
 #include "../thirdparty/glad/glad.h"
+#include "resource_manager.h"
 #include <string>
 #include <vector>
 
@@ -17,6 +19,8 @@ class Gui_Item {
 	float width = 0;
 	float start_pos_x;
 	float start_pos_y;
+	float window_width;
+	float window_height;
 
 	std::vector<glm::vec3> vertices;
 
@@ -26,16 +30,25 @@ class Gui_Item {
   public:
 	enum class Type { BUTTON, TEXT_FIELD, MENU };
 
-	Gui_Item(float width, float height, float start_pos_x, float start_pos_y)
-		: width(width), height(height), start_pos_x(start_pos_x), start_pos_y(start_pos_y) {
+	Gui_Item(int width, int height, int start_pos_x, int start_pos_y) {
+		json config = ResourceManager::Config;
+		window_width = config["window"]["width"].get<int>() / 2.0f;
+		window_height = config["window"]["height"].get<int>() / 2.0f;
 
-		vertices.push_back({start_pos_x, start_pos_y, 0.0f});
-		vertices.push_back({start_pos_x + width, start_pos_y, 0.0f});
-		vertices.push_back({start_pos_x + width, start_pos_y - height, 0.0f});
+		this->width = (width / window_width);
+		this->height = (height / window_height);
+		this->start_pos_x = (start_pos_x / window_width) - 1;
+		this->start_pos_y = (start_pos_y / window_height) - 1;
 
-		vertices.push_back({start_pos_x, start_pos_y, 0.0f});
-		vertices.push_back({start_pos_x + width, start_pos_y - height, 0.0f});
-		vertices.push_back({start_pos_x, start_pos_y - height, 0.0f});
+		vertices.push_back({this->start_pos_x, this->start_pos_y, 0.0f});
+		vertices.push_back({this->start_pos_x + this->width, this->start_pos_y, 0.0f});
+		vertices.push_back(
+			{this->start_pos_x + this->width, this->start_pos_y + this->height, 0.0f});
+
+		vertices.push_back({this->start_pos_x, this->start_pos_y, 0.0f});
+		vertices.push_back(
+			{this->start_pos_x + this->width, this->start_pos_y + this->height, 0.0f});
+		vertices.push_back({this->start_pos_x, this->start_pos_y + this->height, 0.0f});
 		setupBuffer();
 	}
 	Gui_Item() {};

@@ -10,13 +10,14 @@
 
 #include "game.h"
 #include "utils/menu.h"
-#include "utils/resource_manager.h"
 
 using json = nlohmann::json;
 using namespace std;
 
 Game game;
 Menu main_menu;
+Menu top_menu;
+
 json config;
 double currX, currY;
 int click_count = 0;
@@ -37,7 +38,8 @@ int main() {
 	if (gui) {
 		GLFWwindow *window = init();
 		game.Init();
-		main_menu = Menu(1.0f, 1.5f, -0.5f, 0.75f, config["name"]);
+		main_menu = Menu(300, 480, 150, 80, "Test");
+		top_menu = Menu(600, 40, 0, 600);
 		while (!glfwWindowShouldClose(window)) {
 			render(window);
 		}
@@ -121,7 +123,8 @@ void render(GLFWwindow *window) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	game.Render();
-	// main_menu.Draw();
+	main_menu.Draw();
+	top_menu.Draw();
 
 	render_debug_frame(window);
 

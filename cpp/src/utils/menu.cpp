@@ -27,6 +27,7 @@ float Menu::GetXPad(Menu::Position position, float child_width) {
 		exit(-1);
 	}
 }
+
 float Menu::GetItemHeight() {
 	if (this->is_named) {
 		return start_pos_y - this->Name.GetHeight();

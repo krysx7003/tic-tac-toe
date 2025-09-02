@@ -23,10 +23,12 @@ class Menu : public Gui_Item {
 
 	};
 
-	Menu(float width, float height, float start_pos_x, float start_pos_y, std::string name = "")
+	Menu(int width, int height, int start_pos_x, int start_pos_y, std::string name = "")
 		: Gui_Item(width, height, start_pos_x, start_pos_y) {
 		if (!name.empty()) {
-			Name = Text_Field(width, 0.25f, start_pos_x, start_pos_y, name);
+			int text_start_pos_y = start_pos_y + height - 60;
+
+			Name = Text_Field(width, 60, start_pos_x, text_start_pos_y, name);
 			Name.SetBgColor(0.0f, 0.0f, 1.0f);
 			is_named = true;
 		}
