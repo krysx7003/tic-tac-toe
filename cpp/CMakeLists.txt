@@ -28,6 +28,10 @@ set(UTIL_SOURCES
     src/utils/texture.cpp
     src/utils/resource_manager.cpp
     src/utils/sprite.cpp
+    src/utils/menu.cpp
+    src/utils/gui_item.cpp
+    src/utils/text_field.cpp
+    src/utils/button.cpp
 )
 
 set(GLAD_SOURCE src/thirdparty/glad.c)

@@ -4,17 +4,33 @@
 #include "tile.h"
 #include <glm/ext/vector_float2.hpp>
 
-Game::Game(bool gui) {
+void Game::Init() {
+	config = ResourceManager::Config;
+	top_menu_height = config["top_menu"]["height"].get<int>();
+
 	curr_player = Player::O;
-	board = Board(gui);
+
+	ResourceManager::LoadShader("line.vs", "line.frag", "line");
+	ResourceManager::LoadShader("piece.vs", "piece.frag", "piece");
+	ResourceManager::LoadShader("tile.vs", "tile.frag", "tile");
+
+	ResourceManager::LoadTexture("X.png", true, "X");
+	ResourceManager::LoadTexture("O.png", true, "O");
+
+	ResourceManager::LoadTexture("h_line.png", true, "horizontal");
+	ResourceManager::LoadTexture("v_line.png", true, "vertical");
+	ResourceManager::LoadTexture("d_r_line.png", true, "diagonal_r");
+	ResourceManager::LoadTexture("d_l_line.png", true, "diagonal_l");
+
+	board.Init();
 	board.SetupBuffers();
 }
 
-void Game::start() {
+void Game::Start() {
 	while (active) {
 		system("clear");
 
-		printf("Current player: %c", getPlayer());
+		printf("Current player: %c", GetPlayer());
 		char *state = board.GetTilesState();
 		printf("\n-------------\n");
 		printf("| %c | %c | %c | | 0 | 1 | 2 |\n----------\n", state[0], state[1], state[2]);
@@ -26,25 +42,25 @@ void Game::start() {
 		printf("Next move\n> ");
 		scanf("%d", &id);
 
-		while (!chosenTile(id)) {
+		while (!ChosenTile(id)) {
 			printf("Invalid input. Next move\n> ");
 			scanf("%d", &id);
 		}
 	}
-	if (!isDraw()) {
+	if (!IsDraw()) {
 		char *state = board.GetTilesState();
 		printf("\n-------------\n");
 		printf("| %c | %c | %c |\n----------\n", state[0], state[1], state[2]);
 		printf("| %c | %c | %c |\n----------\n", state[3], state[4], state[5]);
 		printf("| %c | %c | %c |\n----------\n", state[6], state[7], state[8]);
 
-		printf("\nPlayer %c won\n", getWinner());
+		printf("\nPlayer %c won\n", GetWinner());
 	} else {
 		printf("\nGame ended with a draw\n");
 	}
 }
 
-void Game::render() {
+void Game::Render() {
 	board.Render();
 
 	if (!active) {
@@ -52,7 +68,7 @@ void Game::render() {
 	}
 }
 
-void Game::restart() {
+void Game::Restart() {
 	curr_player = Player::O;
 	lastTile = -1;
 	winner = -1;
@@ -61,7 +77,7 @@ void Game::restart() {
 	board.SetTilesState();
 }
 
-bool Game::chosenTile(float x, float y) {
+bool Game::ChosenTile(float x, float y) {
 	if (!active) {
 		return false;
 	}
@@ -78,7 +94,7 @@ bool Game::chosenTile(float x, float y) {
 	return false;
 }
 
-bool Game::chosenTile(int tileId) {
+bool Game::ChosenTile(int tileId) {
 	if (!active) {
 		return false;
 	}
@@ -101,9 +117,9 @@ void Game::swapPlayer() {
 		curr_player = Player::O;
 	}
 
-	if (winCondition()) {
+	if (WinCondition()) {
 		active = false;
-	} else if (isDraw()) {
+	} else if (IsDraw()) {
 		active = false;
 	}
 }
@@ -116,8 +132,8 @@ void Game::setWinner(char state) {
 	}
 }
 
-bool Game::winCondition() {
-	for (int i = 0; i < BOARD_WIDTH; i++) {
+bool Game::WinCondition() {
+	for (int i = 0; i < board.width; i++) {
 		if (horizontalLine(i))
 			return true;
 		if (verticalLine(i))
@@ -137,7 +153,7 @@ bool Game::verticalLine(int col) {
 	if (first == TileState::Empty)
 		return false;
 
-	for (int row = 1; row < BOARD_WIDTH; row++) {
+	for (int row = 1; row < board.width; row++) {
 		if (board.tiles_state[col + row * 3] != first)
 			return false;
 	}
@@ -145,7 +161,7 @@ bool Game::verticalLine(int col) {
 	setWinner(first);
 
 	texture = "vertical";
-	texture_pos = glm::vec2(col * 200, 0);
+	texture_pos = glm::vec2(col * 200, top_menu_height);
 	texture_size = glm::vec2(200, 600);
 
 	return true;
@@ -156,7 +172,7 @@ bool Game::horizontalLine(int row) {
 	if (first == TileState::Empty)
 		return false;
 
-	for (int col = 1; col < BOARD_WIDTH; col++) {
+	for (int col = 1; col < board.width; col++) {
 		if (board.tiles_state[col + row * 3] != first)
 			return false;
 	}
@@ -164,7 +180,7 @@ bool Game::horizontalLine(int row) {
 	setWinner(first);
 
 	texture = "horizontal";
-	texture_pos = glm::vec2(0, row * 200);
+	texture_pos = glm::vec2(0, row * 200 + top_menu_height);
 	texture_size = glm::vec2(600, 200);
 
 	return true;
@@ -176,7 +192,7 @@ bool Game::diagonalLeftLine() {
 		if (board.tiles_state[4] == topLeft && board.tiles_state[8] == topLeft) {
 			setWinner(topLeft);
 			texture = "diagonal_l";
-			texture_pos = glm::vec2(0, 0);
+			texture_pos = glm::vec2(0, top_menu_height);
 			texture_size = glm::vec2(600, 600);
 
 			return true;
@@ -190,7 +206,7 @@ bool Game::diagonalRightLine() {
 		if (board.tiles_state[4] == topRight && board.tiles_state[6] == topRight) {
 			setWinner(topRight);
 			texture = "diagonal_r";
-			texture_pos = glm::vec2(0, 0);
+			texture_pos = glm::vec2(0, top_menu_height);
 			texture_size = glm::vec2(600, 600);
 
 			return true;
@@ -199,8 +215,8 @@ bool Game::diagonalRightLine() {
 	return false;
 }
 
-bool Game::isDraw() {
-	for (int i = 0; i < BOARD_SIZE; i++) {
+bool Game::IsDraw() {
+	for (int i = 0; i < board.tiles_num; i++) {
 		if (board.tiles_state[i] == TileState::Empty) {
 			return false;
 		}
@@ -209,8 +225,8 @@ bool Game::isDraw() {
 	return true;
 }
 
-char Game::getPlayer() { return curr_player; }
+char Game::GetPlayer() { return curr_player; }
 
-char Game::getWinner() { return winner; }
+char Game::GetWinner() { return winner; }
 
-short Game::getLastTile() { return lastTile; }
+short Game::GetLastTile() { return lastTile; }

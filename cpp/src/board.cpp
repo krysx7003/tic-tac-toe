@@ -5,31 +5,47 @@
 #include "utils/texture.h"
 
 #include <GLFW/glfw3.h>
+#include <cstdio>
 
-Board::Board(bool gui) {
-	boardGui = gui;
+void Board::Init() {
+	config = ResourceManager::Config;
+
+	boardGui = config["gui"];
+
+	float top_menu_height = config["top_menu"]["height"];
+	float offset = top_menu_height / 320.0f;
+
+	tiles_num = config["board"]["tiles_num"];
+	width = config["board"]["width"];
+	tile_size = 2.0f / width;
+	tile_width = config["board"]["tile_width"];
+	float line_top = tile_width - top_menu_height;
+	float line_bot = tile_width + top_menu_height;
+	tile_size_px = glm::vec2(tile_width, tile_width);
+
+	tiles_state = new char[tiles_num];
+
 	SetTilesState();
 
 	if (boardGui) {
-		for (int row = 0; row < BOARD_WIDTH; row++) {
-			for (int col = 0; col < BOARD_WIDTH; col++) {
-				AddTile(row, col);
-				tiles_pos.push_back({col * 200, row * 200});
+		for (int row = 0; row < width; row++) {
+			for (int col = 0; col < width; col++) {
+				addTile(row, col);
+				tiles_pos.push_back({col * 200, row * 200 + top_menu_height});
 			}
 		}
 
-		grid.push_back({1.0f / 3, 1.0f, 0.0f});
+		grid.push_back({1.0f / 3, 1.0f - offset, 0.0f});
 		grid.push_back({1.0f / 3, -1.0f, 0.0f});
-		grid.push_back({-1.0f / 3, 1.0f, 0.0f});
+		grid.push_back({-1.0f / 3, 1.0f - offset, 0.0f});
 		grid.push_back({-1.0f / 3, -1.0f, 0.0f});
 
-		grid.push_back({1.0f, 1.0f / 3, 0.0f});
-		grid.push_back({-1.0f, 1.0f / 3, 0.0f});
-		grid.push_back({1.0f, -1.0f / 3, 0.0f});
-		grid.push_back({-1.0f, -1.0f / 3, 0.0f});
+		grid.push_back({1.0f, line_top / 640, 0.0f});
+		grid.push_back({-1.0f, line_top / 640, 0.0f});
+		grid.push_back({1.0f, -line_bot / 640, 0.0f});
+		grid.push_back({-1.0f, -line_bot / 640, 0.0f});
 
-		glm::mat4 projection =
-			glm::ortho(0.0f, static_cast<float>(600), static_cast<float>(600), 0.0f, -1.0f, 1.0f);
+		glm::mat4 projection = glm::ortho(0.0f, 600.0f, 640.0f, 0.0f, -1.0f, 1.0f);
 		ResourceManager::GetShader("piece").Use().SetInteger("image", 0);
 		ResourceManager::GetShader("piece").SetMatrix4("projection", projection);
 		Renderer = new SpriteRenderer(ResourceManager::GetShader("piece"));
@@ -39,8 +55,8 @@ Board::Board(bool gui) {
 Board::Board() { SetTilesState(); }
 
 void Board::SetTilesState() {
-	for (int row = 0; row < BOARD_WIDTH; row++) {
-		for (int col = 0; col < BOARD_WIDTH; col++) {
+	for (int row = 0; row < width; row++) {
+		for (int col = 0; col < width; col++) {
 			tiles_state[(row * 3) + col] = TileState::Empty;
 		}
 	}
@@ -50,7 +66,7 @@ void Board::Render() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	for (int i = 0; i < BOARD_SIZE; i++) {
+	for (int i = 0; i < tiles_num; i++) {
 		if (tiles_state[i] == TileState::Empty) {
 			continue;
 		}
@@ -61,8 +77,7 @@ void Board::Render() {
 		} else {
 			texture = ResourceManager::GetTexture("X");
 		}
-
-		Renderer->DrawSprite(texture, tiles_pos[i], TILE_SIZE_PX, 0.0f,
+		Renderer->DrawSprite(texture, tiles_pos[i], tile_size_px, 0.0f,
 							 glm::vec3(0.0f, 0.0f, 0.0f));
 	}
 
@@ -112,11 +127,11 @@ void Board::SetupBuffers() {
 	glBindVertexArray(0);
 }
 
-void Board::AddTile(int row, int col) {
-	GLfloat left = -1.0f + TILE_SIZE * col;
-	GLfloat right = left + TILE_SIZE;
-	GLfloat top = 1.0f - TILE_SIZE * row;
-	GLfloat bottom = top - TILE_SIZE;
+void Board::addTile(int row, int col) {
+	GLfloat left = -1.0f + tile_size * col;
+	GLfloat right = left + tile_size;
+	GLfloat top = 1.0f - tile_size * row;
+	GLfloat bottom = top - tile_size;
 
 	tiles.push_back({left, top, 0.0f});
 	tiles.push_back({right, top, 0.0f});

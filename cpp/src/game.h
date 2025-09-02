@@ -3,6 +3,9 @@
 #include <string>
 
 class Game {
+	json config;
+
+	int top_menu_height;
 	char curr_player = -1;
 	short lastTile = -1;
 	short winner = -1;
@@ -23,18 +26,18 @@ class Game {
 	Board board;
 	bool active = true;
 
-	Game(bool gui);
+	void Init();
 	Game() {};
 
-	void start();
-	void render();
-	bool chosenTile(float col, float row);
-	bool chosenTile(int tileId);
-	bool winCondition();
-	bool isDraw();
-	short getLastTile();
-	void restart();
+	void Start();
+	void Render();
+	bool ChosenTile(float col, float row);
+	bool ChosenTile(int tileId);
+	bool WinCondition();
+	bool IsDraw();
+	short GetLastTile();
+	void Restart();
 
-	char getPlayer();
-	char getWinner();
+	char GetPlayer();
+	char GetWinner();
 };

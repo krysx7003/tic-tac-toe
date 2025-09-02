@@ -1,4 +1,24 @@
 {
     "gui": true,
-    "pretty_print": false
+    "pretty_print": false,
+    "name": "",
+    "window":{
+        "width": 600,
+        "height": 640,
+        "i3-prefix": ""
+    },
+    "main_menu":{
+        "width": 600,
+        "height": 600
+    },
+    "top_menu":{
+        "width": 600,
+        "height": 40
+    },
+    "board":{
+        "tiles_num" : 9,
+        "width" :3,
+        "tile_width" : 200
+    }
+
 }

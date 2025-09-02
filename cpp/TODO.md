@@ -15,7 +15,7 @@
 - [x] Replace commandline args with config.json
 - [x] Symlink ./resources to build dirs
 - [x] Remove includes dir
-- [ ] Methods should start from uppercase
+- [x] Methods should start from uppercase
 - [ ] Move game logic form main to Game
 - [ ] Move tile related logic to Tile
 - [ ] Yoink TetxRenderer

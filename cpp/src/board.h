@@ -5,20 +5,23 @@
 #include "utils/sprite.h"
 
 #include "thirdparty/glad/glad.h"
+#include "thirdparty/json.hpp"
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <glm/glm.hpp>
+#include <istream>
 #include <vector>
 
+using json = nlohmann::json;
 using namespace std;
 
-const int BOARD_SIZE = 9;
-const int BOARD_WIDTH = 3;
-const float TILE_SIZE = 2.0f / BOARD_WIDTH;
-const float TILE_WIDTH = 200.0f;
-const glm::vec2 TILE_SIZE_PX = glm::vec2(TILE_WIDTH, TILE_WIDTH);
-
 class Board {
+	json config;
+
+	float tile_size;
+	float tile_width;
+	glm::vec2 tile_size_px;
+
 	std::vector<glm ::vec3> grid;
 	std::vector<glm ::vec3> tiles;
 	std::vector<glm ::vec2> tiles_pos;
@@ -27,13 +30,15 @@ class Board {
 	bool boardGui = false;
 	SpriteRenderer *Renderer;
 
-	void AddTile(int row, int col);
+	void addTile(int row, int col);
 
   public:
-	char tiles_state[BOARD_SIZE];
+	int tiles_num;
+	int width;
+	char *tiles_state;
 
-	Board(bool gui);
 	Board();
+	void Init();
 
 	void SetupBuffers();
 	void Render();
