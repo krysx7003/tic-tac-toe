@@ -38,8 +38,18 @@ int main() {
 	if (gui) {
 		GLFWwindow *window = init();
 		game.Init();
-		main_menu = Menu(300, 480, 150, 80, "Test");
+		main_menu = Menu(300, 480, 150, 80);
+
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 150, "Main", false);
+		main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Start", false);
+		main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Restart", false);
+		main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit");
+
 		top_menu = Menu(600, 40, 0, 600);
+		top_menu.SetLayout(Menu::Layout::ROW);
+		top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu", false);
+		top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Next player %d");
+
 		while (!glfwWindowShouldClose(window)) {
 			render(window);
 		}

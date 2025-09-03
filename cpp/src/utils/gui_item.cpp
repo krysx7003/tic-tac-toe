@@ -22,9 +22,34 @@ void Gui_Item::setupBuffer() {
 	glEnableVertexAttribArray(0);
 }
 
+void Gui_Item::setupVertices() {
+	vertices.erase(vertices.begin(), vertices.end());
+
+	float fWidth = (width / window_width);
+	float fHeight = (height / window_height);
+	float fStart_pos_x = (start_pos_x / window_width) - 1;
+	float fStart_pos_y = (start_pos_y / window_height) - 1;
+
+	vertices.push_back({fStart_pos_x, fStart_pos_y, 0.0f});
+	vertices.push_back({fStart_pos_x + fWidth, fStart_pos_y, 0.0f});
+	vertices.push_back({fStart_pos_x + fWidth, fStart_pos_y + fHeight, 0.0f});
+
+	vertices.push_back({fStart_pos_x, fStart_pos_y, 0.0f});
+	vertices.push_back({fStart_pos_x + fWidth, fStart_pos_y + fHeight, 0.0f});
+	vertices.push_back({fStart_pos_x, fStart_pos_y + fHeight, 0.0f});
+
+	setupBuffer();
+}
+
 void Gui_Item::SetBgColor(float r, float g, float b) { BgColor = glm::vec3(r, g, b); }
 
 void Gui_Item::SetFgColor(float r, float g, float b) { FgColor = glm::vec3(r, g, b); }
 
-float Gui_Item::GetHeight() { return height; }
-float Gui_Item::GetWidth() { return width; }
+int Gui_Item::GetHeight() { return height; }
+int Gui_Item::GetWidth() { return width; }
+
+void Gui_Item::SetStartY(int start_y) {
+	this->start_pos_y = start_y;
+	setupVertices();
+}
+int Gui_Item::GetStartY() { return start_pos_y; }

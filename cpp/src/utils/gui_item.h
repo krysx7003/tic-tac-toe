@@ -15,10 +15,10 @@ class Gui_Item {
 	GLuint VAO_Bg, VBO_Bg;
 
   protected:
-	float height = 0;
-	float width = 0;
-	float start_pos_x;
-	float start_pos_y;
+	int height = 0;
+	int width = 0;
+	int start_pos_x;
+	int start_pos_y;
 	float window_width;
 	float window_height;
 
@@ -26,38 +26,29 @@ class Gui_Item {
 
 	void drawSquare();
 	void setupBuffer();
+	void setupVertices();
 
   public:
 	enum class Type { BUTTON, TEXT_FIELD, MENU };
 
-	Gui_Item(int width, int height, int start_pos_x, int start_pos_y) {
+	Gui_Item(int width, int height, int start_pos_x, int start_pos_y)
+		: width(width), height(height), start_pos_x(start_pos_x), start_pos_y(start_pos_y) {
+
 		json config = ResourceManager::Config;
 		window_width = config["window"]["width"].get<int>() / 2.0f;
 		window_height = config["window"]["height"].get<int>() / 2.0f;
 
-		this->width = (width / window_width);
-		this->height = (height / window_height);
-		this->start_pos_x = (start_pos_x / window_width) - 1;
-		this->start_pos_y = (start_pos_y / window_height) - 1;
-
-		vertices.push_back({this->start_pos_x, this->start_pos_y, 0.0f});
-		vertices.push_back({this->start_pos_x + this->width, this->start_pos_y, 0.0f});
-		vertices.push_back(
-			{this->start_pos_x + this->width, this->start_pos_y + this->height, 0.0f});
-
-		vertices.push_back({this->start_pos_x, this->start_pos_y, 0.0f});
-		vertices.push_back(
-			{this->start_pos_x + this->width, this->start_pos_y + this->height, 0.0f});
-		vertices.push_back({this->start_pos_x, this->start_pos_y + this->height, 0.0f});
-		setupBuffer();
+		setupVertices();
 	}
 	Gui_Item() {};
 
 	void SetBgColor(float r, float g, float b);
 	void SetFgColor(float r, float g, float b);
+	void SetStartY(int start_y);
 
-	float GetHeight();
-	float GetWidth();
+	int GetHeight();
+	int GetStartY();
+	int GetWidth();
 
 	virtual void Draw() = 0;
 	virtual ~Gui_Item() = default;
