@@ -41,7 +41,7 @@ glm::ivec2 Menu::colChildPadding(int width_px, int height_px) {
 }
 
 void Menu::colUpdateItems(int child_height, int child_pos_y) {
-	int total_height = child_height + this->item_padding_y;
+	int total_height = child_height;
 	int size = this->Items.size();
 
 	for (int i = size; i > 0; i--) {
@@ -50,24 +50,55 @@ void Menu::colUpdateItems(int child_height, int child_pos_y) {
 	}
 }
 
-void Menu::AddItem(Gui_Item::Type type, int width_px, int height_px, std::string name,
-				   bool updateVertices) {
-	std::unique_ptr<Gui_Item> new_item;
+void Menu::addToColl(Gui_Item::Type type, int width_px, int height_px, std::string name,
+					 bool updateVertices, int id) {
 	int child_x, child_y;
-	if (this->layout == Layout::COL) {
-		glm::ivec2 padding = colChildPadding(width_px, height_px);
+	glm::ivec2 padding = colChildPadding(width_px, height_px);
 
-		child_x = this->start_pos_x + padding[0];
-		child_y = this->start_pos_y + padding[1];
-	} else if (this->layout == Layout::ROW) {
-		int total_x = 0;
-		for (auto &item : Items) {
-			total_x += item->GetWidth() + this->item_padding_x;
+	child_x = this->start_pos_x + padding[0];
+	child_y = this->start_pos_y + padding[1];
+
+	std::unique_ptr<Gui_Item> new_item =
+		createItem(type, width_px, height_px, name, child_x, child_y);
+
+	if (id == -1) {
+		if (updateVertices) {
+			colUpdateItems(height_px + this->item_padding_y, child_y);
 		}
 
-		child_x = this->start_pos_x + total_x;
-		child_y = this->start_pos_y;
+		Items.push_back(std::move(new_item));
+	} else {
+		Items.insert(Items.begin() + id, std::move(new_item));
+		colUpdateItems(0, child_y);
 	}
+}
+
+void Menu::addToRow(Gui_Item::Type type, int width_px, int height_px, std::string name,
+					bool updateVertices, int id) {
+	int child_x, child_y;
+
+	int total_x = 0;
+	for (auto &item : Items) {
+		total_x += item->GetWidth() + this->item_padding_x;
+	}
+
+	child_x = this->start_pos_x + total_x;
+	child_y = this->start_pos_y;
+
+	std::unique_ptr<Gui_Item> new_item =
+		createItem(type, width_px, height_px, name, child_x, child_y);
+
+	if (id == -1) {
+		Items.push_back(std::move(new_item));
+	} else {
+		printf("ERROR::MENU: Adding items at id is not yet impelmented\n");
+		exit(-1);
+	}
+}
+
+std::unique_ptr<Gui_Item> Menu::createItem(Gui_Item::Type type, int width_px, int height_px,
+										   std::string name, int child_x, int child_y) {
+	std::unique_ptr<Gui_Item> new_item;
 
 	if (type == Gui_Item::Type::BUTTON) {
 		new_item = std::make_unique<Button>(width_px, height_px, child_x, child_y, name);
@@ -81,12 +112,24 @@ void Menu::AddItem(Gui_Item::Type type, int width_px, int height_px, std::string
 		printf("ERROR::MENU: Gui_Item is not yet implemented\n");
 		exit(-1);
 	}
+	return new_item;
+}
 
-	if (this->layout == Layout::COL && updateVertices) {
-		colUpdateItems(height_px, child_y);
+int Menu::AddItem(Gui_Item::Type type, int width_px, int height_px, std::string name,
+				  bool updateVertices, int id) {
+	std::unique_ptr<Gui_Item> new_item;
+	if (this->layout == Layout::COL) {
+		addToColl(type, width_px, height_px, name, updateVertices, id);
+
+	} else if (this->layout == Layout::ROW) {
+		addToRow(type, width_px, height_px, name, updateVertices, id);
 	}
 
-	Items.push_back(std::move(new_item));
+	if (id == -1) {
+		return this->Items.size() - 1;
+	} else {
+		return id;
+	}
 }
 
 void Menu::SetLayout(Layout new_layout) { this->layout = new_layout; }

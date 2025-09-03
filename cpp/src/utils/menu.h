@@ -18,6 +18,13 @@ class Menu : public Gui_Item {
 	int item_padding_y = 15;
 	int item_padding_x = 30;
 
+	void addToColl(Gui_Item::Type type, int width_px, int height_px, std::string name,
+				   bool updateVertices, int id);
+	void addToRow(Gui_Item::Type type, int width_px, int height_px, std::string name,
+				  bool updateVertices, int id);
+	std::unique_ptr<Gui_Item> createItem(Gui_Item::Type type, int width_px, int height_px,
+										 std::string name, int child_x, int child_y);
+
   public:
 	enum class VerticalPos { TOP, CENTER, BOTTOM };
 	enum class HorizontalPos { LEFT, CENTER, RIGHT };
@@ -38,8 +45,8 @@ class Menu : public Gui_Item {
 	Menu() {};
 
 	void Draw() override;
-	void AddItem(Gui_Item::Type type, int width_px, int height_px, std::string name,
-				 bool updateVertices = true);
+	int AddItem(Gui_Item::Type type, int width_px, int height_px, std::string name,
+				bool updateVertices = true, int id = -1);
 	void SetLayout(Layout new_layout);
 	glm::ivec2 colChildPadding(int width_px, int height_px);
 	void colUpdateItems(int child_height, int child_pos_x);
