@@ -1,6 +1,7 @@
 {
     "gui": true,
     "pretty_print": false,
+    "debug_visible": true,
     "name": "Tic-Tac-Toe",
     "window":{
         "width": 600,

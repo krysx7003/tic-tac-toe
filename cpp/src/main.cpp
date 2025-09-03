@@ -18,6 +18,12 @@ Game game;
 Menu main_menu;
 Menu top_menu;
 
+int text_id;
+int start_id, restart_id, exit_id;
+
+bool menu_visible = false;
+bool debug_visible;
+
 json config;
 double currX, currY;
 int click_count = 0;
@@ -28,27 +34,20 @@ void render(GLFWwindow *window);
 void render_debug_frame(GLFWwindow *window);
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+void initMainMenu();
+void initPauseMenu();
 bool isValidInput(char c);
 
 int main() {
 	config = ResourceManager::LoadConfig();
 	bool gui = config["gui"];
 	top_menu_h = config["top_menu"]["height"];
+	debug_visible = config["debug_visible"];
 
 	if (gui) {
 		GLFWwindow *window = init();
 		game.Init();
-		main_menu = Menu(300, 480, 150, 80);
-
-		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 150, "Main", false);
-		main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Start", false);
-		main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Restart", false);
-		main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit");
-
-		top_menu = Menu(600, 40, 0, 600);
-		top_menu.SetLayout(Menu::Layout::ROW);
-		top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu", false);
-		top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Next player %d");
 
 		while (!glfwWindowShouldClose(window)) {
 			render(window);
@@ -89,6 +88,19 @@ bool isValidInput(char c) {
 	return false;
 }
 
+void initMainMenu() {
+	main_menu = Menu(300, 480, 150, 80);
+
+	text_id = main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 150, "Main", false);
+	start_id = main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Start", false);
+	exit_id = main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit");
+}
+
+void initPauseMenu() {
+	restart_id = main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Restart", true, 2);
+	exit_id++;
+}
+
 GLFWwindow *init() {
 	if (!glfwInit()) {
 		printf("ERROR::INIT: Failed to init glfw\n");
@@ -124,6 +136,14 @@ GLFWwindow *init() {
 
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetKeyCallback(window, key_callback);
+
+	top_menu = Menu(600, 40, 0, 600);
+	top_menu.SetLayout(Menu::Layout::ROW);
+	top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu", false);
+	top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Next player %d");
+
+	initMainMenu();
 
 	return window;
 }
@@ -133,10 +153,14 @@ void render(GLFWwindow *window) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	game.Render();
-	main_menu.Draw();
+	if (menu_visible) {
+		main_menu.Draw();
+	}
 	top_menu.Draw();
 
-	render_debug_frame(window);
+	if (debug_visible) {
+		render_debug_frame(window);
+	}
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();
@@ -194,5 +218,11 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		click_count++;
 		game.ChosenTile(currX, currY);
+	}
+}
+
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+		menu_visible = !menu_visible;
 	}
 }
