@@ -7,11 +7,13 @@ enable_language(C)
 
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Freetype REQUIRED)
 
 include_directories(
     src/thirdparty
     src/thirdparty/imgui
     src/thirdparty/imgui/backends
+    ${FREETYPE_INCLUDE_DIRS}
 )
 
 set(IMGUI_SOURCES
@@ -32,6 +34,7 @@ set(UTIL_SOURCES
     src/utils/gui_item.cpp
     src/utils/text_field.cpp
     src/utils/button.cpp
+    src/utils/text_renderer.cpp
 )
 
 set(GLAD_SOURCE src/thirdparty/glad.c)
@@ -50,6 +53,7 @@ set_source_files_properties(${GLAD_SOURCE} PROPERTIES LANGUAGE C)
 target_link_libraries(tic-tac-toe
     glfw
     OpenGL::GL
+    Freetype::Freetype
     dl
     pthread
 )
