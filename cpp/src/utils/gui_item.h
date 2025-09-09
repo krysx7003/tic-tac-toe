@@ -9,12 +9,12 @@
 #include <vector>
 
 class Gui_Item {
-	glm::vec3 BgColor = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::vec3 FgColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	GLuint VAO_Bg, VBO_Bg;
 
   protected:
+	glm::vec3 BgColor = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 FgColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	int height = 0;
 	int width = 0;
 	int start_pos_x;
@@ -44,12 +44,12 @@ class Gui_Item {
 
 	void SetBgColor(float r, float g, float b);
 	void SetFgColor(float r, float g, float b);
-	void SetStartY(int start_y);
 
 	int GetHeight();
 	int GetStartY();
 	int GetWidth();
 
+	virtual void SetStartY(int start_y);
 	virtual void Draw() = 0;
 	virtual ~Gui_Item() = default;
 };

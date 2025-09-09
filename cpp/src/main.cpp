@@ -215,6 +215,9 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 	if (io.WantCaptureMouse)
 		return;
 
+	if (menu_visible)
+		return;
+
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		click_count++;
 		game.ChosenTile(currX, currY);
