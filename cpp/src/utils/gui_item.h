@@ -22,6 +22,8 @@ class Gui_Item {
 	float window_width;
 	float window_height;
 
+	int padding_top = 15;
+
 	std::vector<glm::vec3> vertices;
 
 	void drawSquare();
@@ -29,6 +31,7 @@ class Gui_Item {
 	void setupVertices();
 
   public:
+	int Menu_id;
 	enum class Type { BUTTON, TEXT_FIELD, MENU };
 
 	Gui_Item(int width, int height, int start_pos_x, int start_pos_y)
@@ -44,10 +47,12 @@ class Gui_Item {
 
 	void SetBgColor(float r, float g, float b);
 	void SetFgColor(float r, float g, float b);
+	void SetPadding(int top);
 
 	int GetHeight();
 	int GetStartY();
 	int GetWidth();
+	int GetPadding();
 
 	virtual void SetStartY(int start_y);
 	virtual void Draw() = 0;

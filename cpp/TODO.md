@@ -18,7 +18,7 @@
 - [x] Methods should start from uppercase
 - [ ] Move game logic form main to Game
 - [ ] Move tile related logic to Tile
-- [ ] Yoink TetxRenderer
+- [x] Yoink TetxRenderer
 - [ ] Make window/menu class(Custom shape rectangle)
 - [ ] Make button class(Custom shape rectangle, changes color when mouse is
         over it, can be clicked)

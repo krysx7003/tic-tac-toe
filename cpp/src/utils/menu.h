@@ -13,23 +13,20 @@ class Menu : public Gui_Item {
 
 	Text_Field Name;
 	bool is_named = false;
-	std::vector<std::unique_ptr<Gui_Item>> Items;
 	float start_items_y;
-	int item_padding_y = 15;
 	int item_padding_x = 30;
 
-	void addToColl(Gui_Item::Type type, int width_px, int height_px, std::string name,
-				   bool updateVertices, int id);
-	void addToRow(Gui_Item::Type type, int width_px, int height_px, std::string name,
-				  bool updateVertices, int id);
+	Gui_Item *addToColl(Gui_Item::Type type, int width_px, int height_px, std::string name,
+						bool updateVertices, int id);
+	Gui_Item *addToRow(Gui_Item::Type type, int width_px, int height_px, std::string name,
+					   bool updateVertices, int id);
 	std::unique_ptr<Gui_Item> createItem(Gui_Item::Type type, int width_px, int height_px,
 										 std::string name, int child_x, int child_y);
 
   public:
-	enum class VerticalPos { TOP, CENTER, BOTTOM };
-	enum class HorizontalPos { LEFT, CENTER, RIGHT };
 	enum class Layout { ROW, COL };
 	Menu::Layout layout = Layout::COL;
+	std::vector<std::unique_ptr<Gui_Item>> Items;
 
 	Menu(int width, int height, int start_pos_x, int start_pos_y, std::string name = "",
 		 Layout layout = Layout::COL)
@@ -45,8 +42,9 @@ class Menu : public Gui_Item {
 	Menu() {};
 
 	void Draw() override;
-	int AddItem(Gui_Item::Type type, int width_px, int height_px, std::string name,
-				bool updateVertices = true, int id = -1);
+	Gui_Item *AddItem(Gui_Item::Type type, int width_px, int height_px, std::string name,
+					  bool updateVertices = true, int id = -1);
+	void RemoveItem(int id);
 	void SetLayout(Layout new_layout);
 	glm::ivec2 colChildPadding(int width_px, int height_px);
 	void colUpdateItems(int child_height, int child_pos_x);

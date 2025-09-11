@@ -45,11 +45,15 @@ void Gui_Item::SetBgColor(float r, float g, float b) { BgColor = glm::vec3(r, g,
 
 void Gui_Item::SetFgColor(float r, float g, float b) { FgColor = glm::vec3(r, g, b); }
 
-int Gui_Item::GetHeight() { return height; }
+int Gui_Item::GetHeight() { return height + padding_top; }
 int Gui_Item::GetWidth() { return width; }
+int Gui_Item::GetPadding() { return padding_top; }
 
 void Gui_Item::SetStartY(int start_y) {
 	this->start_pos_y = start_y;
 	setupVertices();
 }
+
+void Gui_Item::SetPadding(int top) { this->padding_top = top; }
+
 int Gui_Item::GetStartY() { return start_pos_y; }

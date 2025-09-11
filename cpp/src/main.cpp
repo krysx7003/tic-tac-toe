@@ -9,6 +9,7 @@
 #include <string>
 
 #include "game.h"
+#include "utils/button.h"
 #include "utils/menu.h"
 
 using json = nlohmann::json;
@@ -19,10 +20,17 @@ Menu main_menu;
 Menu top_menu;
 
 int text_id;
-int start_id, restart_id, exit_id;
 
 bool menu_visible = false;
 bool debug_visible;
+
+Text_Field *main_text;
+Text_Field *sub_text;
+Text_Field *player_text;
+Button *start_btn;
+Button *restart_btn;
+Button *exit_btn;
+Button *menu_btn;
 
 json config;
 double currX, currY;
@@ -91,14 +99,33 @@ bool isValidInput(char c) {
 void initMainMenu() {
 	main_menu = Menu(300, 480, 150, 80);
 
-	text_id = main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 150, "Main", false);
-	start_id = main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Start", false);
-	exit_id = main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit");
+	main_text = dynamic_cast<Text_Field *>(
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 60, "Tic-Tac-Toe", false));
+	main_text->SetTextSize("big");
+
+	sub_text = dynamic_cast<Text_Field *>(
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "by Nap_Nap", false));
+	sub_text->SetPadding(0);
+	sub_text->SetTextSize("small");
+
+	start_btn =
+		dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Start", false));
+	start_btn->button_text.SetTextSize("medium");
+
+	exit_btn = dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit"));
+	exit_btn->button_text.SetTextSize("medium");
 }
 
 void initPauseMenu() {
-	restart_id = main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Restart", true, 2);
-	exit_id++;
+	main_text->SetText("Paused");
+	main_text->SetAlignmentHor(AlignmentHor::CENTER);
+
+	main_menu.RemoveItem(sub_text->Menu_id);
+
+	restart_btn = dynamic_cast<Button *>(
+		main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Restart", true, 2));
+
+	restart_btn->button_text.SetTextSize("medium");
 }
 
 GLFWwindow *init() {
@@ -140,8 +167,10 @@ GLFWwindow *init() {
 
 	top_menu = Menu(600, 40, 0, 600);
 	top_menu.SetLayout(Menu::Layout::ROW);
-	top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu", false);
-	top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Next player %d");
+	menu_btn =
+		dynamic_cast<Button *>(top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu", false));
+	player_text = dynamic_cast<Text_Field *>(
+		top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Current player O"));
 
 	initMainMenu();
 
@@ -219,13 +248,20 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 		return;
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		click_count++;
 		game.ChosenTile(currX, currY);
+		click_count++;
+
+		char buffer[50];
+		sprintf(buffer, "Current player %c", game.GetPlayer());
+		player_text->SetText(buffer);
 	}
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		menu_visible = !menu_visible;
+	}
+	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+		initPauseMenu();
 	}
 }

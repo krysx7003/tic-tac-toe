@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iostream>
 
 #include <ft2build.h>
@@ -19,6 +20,16 @@ TextRenderer *TextRenderer::GetInstance() {
 	return instance;
 }
 
+int TextRenderer::TextWidth(std::string text, std::string size) {
+	std::string::const_iterator c;
+	int sum = 0;
+	for (c = text.begin(); c != text.end(); c++) {
+		Character ch = Characters[size][*c];
+		sum += (ch.Advance >> 6);
+	}
+	return sum;
+}
+
 TextRenderer::TextRenderer(unsigned int width, unsigned int height) {
 	this->TextShader = ResourceManager::LoadShader("text_2d.vs", "text_2d.frag", "text");
 	this->TextShader.SetMatrix4(
@@ -35,10 +46,12 @@ TextRenderer::TextRenderer(unsigned int width, unsigned int height) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	Load("artro.ttf", 24);
+	Load("artro.ttf", "small", 24);
+	Load("artro.ttf", "medium", 36);
+	Load("artro.ttf", "big", 44);
 }
 
-void TextRenderer::Load(std::string font, unsigned int fontSize) {
+void TextRenderer::Load(std::string font, std::string name, unsigned int fontSize) {
 	font = "resources/fonts/" + font;
 
 	FT_Library ft;
@@ -53,6 +66,9 @@ void TextRenderer::Load(std::string font, unsigned int fontSize) {
 
 	FT_Set_Pixel_Sizes(face, 0, fontSize);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	Characters[name] = std::map<char, Character>();
+	auto &charMap = Characters[name];
 
 	for (GLubyte c = 0; c < 128; c++) {
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
@@ -75,15 +91,19 @@ void TextRenderer::Load(std::string font, unsigned int fontSize) {
 							   glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
 							   glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
 							   static_cast<unsigned int>(face->glyph->advance.x)};
-		Characters.insert(std::pair<char, Character>(c, character));
+
+		charMap.insert(std::pair<char, Character>(c, character));
 	}
+	sizes.insert(std::pair<std::string, int>(name, fontSize));
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
 }
 
-void TextRenderer::RenderText(std::string text, int x, int y, float scale, glm::vec3 color) {
-	y = 640 - y;
+void TextRenderer::RenderText(std::string text, std::string size, int x, int y, float scale,
+							  glm::vec3 color) {
+	y = 640 - (y + sizes[size]);
 
 	this->TextShader.Use();
 	this->TextShader.SetVector3f("textColor", color);
@@ -92,10 +112,10 @@ void TextRenderer::RenderText(std::string text, int x, int y, float scale, glm::
 
 	std::string::const_iterator c;
 	for (c = text.begin(); c != text.end(); c++) {
-		Character ch = Characters[*c];
+		Character ch = Characters[size][*c];
 
 		float xpos = x + ch.Bearing.x * scale;
-		float ypos = y + (this->Characters['H'].Bearing.y - ch.Bearing.y) * scale;
+		float ypos = y + (this->Characters[size]['H'].Bearing.y - ch.Bearing.y) * scale;
 
 		float w = ch.Size.x * scale;
 		float h = ch.Size.y * scale;
