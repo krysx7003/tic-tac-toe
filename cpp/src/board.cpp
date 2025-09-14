@@ -80,7 +80,7 @@ void Board::Render() {
 			texture = ResourceManager::GetTexture("X");
 		}
 		Renderer->DrawSprite(texture, tiles_pos[i], tile_size_px, 0.0f,
-							 glm::vec3(0.0f, 0.0f, 0.0f));
+							 glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 
 	// Shader shader = ResourceManager::GetShader("argb").Use();
@@ -102,7 +102,8 @@ void Board::Render() {
 void Board::RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	Renderer->DrawSprite(win_texture, texture_pos, texture_size, 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	Renderer->DrawSprite(win_texture, texture_pos, texture_size, 0.0f,
+						 glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
 }
 
 void Board::SetupBuffers() {
