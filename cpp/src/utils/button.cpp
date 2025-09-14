@@ -10,8 +10,24 @@ void Button::Draw() {
 	if (isMouseOn()) {
 		this->drawSquare(glm::vec4(1.0f, 1.0f, 1.0f, 0.25f));
 
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-			On_Click();
+		if (isMouseOn()) {
+			this->drawSquare(glm::vec4(1.0f, 1.0f, 1.0f, 0.25f));
+			bool isMousePressed =
+				(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
+
+			if (isMousePressed && !wasMousePressed) {
+				isClickHandled = false;
+			}
+
+			if (isMousePressed && !isClickHandled) {
+				On_Click();
+				isClickHandled = true;
+			}
+
+			wasMousePressed = isMousePressed;
+		} else {
+			wasMousePressed = false;
+			isClickHandled = false;
 		}
 	}
 

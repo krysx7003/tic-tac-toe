@@ -6,6 +6,8 @@
 class Button : public Gui_Item {
 	GLFWwindow *window;
 	void (*on_clik_func)();
+	bool wasMousePressed = false;
+	bool isClickHandled = false;
 
 	bool isMouseOn();
 

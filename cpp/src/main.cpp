@@ -178,8 +178,8 @@ void initEndGameMenu() {
 		sub_text->SetText("Draw");
 	}
 
-	lock_visible = true;
 	main_menu.UpdateItems();
+	main_menu.SetVisibility(true);
 }
 
 void initTopMenu() {
@@ -364,7 +364,7 @@ void menu() {
 	if (lock_visible)
 		return;
 
-	main_menu.SetVisibility(true);
+	main_menu.SetVisibility(!main_menu.Visible);
 }
 
 void resume() { main_menu.SetVisibility(false); }
