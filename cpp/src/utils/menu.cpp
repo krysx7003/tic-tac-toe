@@ -4,14 +4,22 @@
 #include <cstdio>
 
 void Menu::Draw() {
-	this->drawSquare();
+	updateDrawCopy();
+	if (!Visible)
+		return;
 
-	if (is_named) {
-		Name.Draw();
-	}
+	this->drawSquare(BgColor);
 
-	for (auto &item : Items) {
+	for (auto &item : itemsDraw) {
 		item->Draw();
+	}
+	drawOutline();
+}
+
+void Menu::updateDrawCopy() {
+	itemsDraw.clear();
+	for (auto &item : Items) {
+		itemsDraw.push_back(item.get());
 	}
 }
 
@@ -30,12 +38,12 @@ glm::ivec2 Menu::colChildPadding(int width_px, int height_px) {
 	}
 	total_y += height_px;
 
-	if (total_y > this->height - Name.GetHeight()) {
+	if (total_y > this->height) {
 		printf("WARN::MENU: Gui_Items do not fit container\n");
 		return glm::ivec2(0, 0);
 	}
 
-	int padding_y = (this->height - Name.GetHeight() - total_y) / 2;
+	int padding_y = (this->height - total_y) / 2;
 
 	return glm::ivec2(padding_x, padding_y);
 }
@@ -66,7 +74,6 @@ Gui_Item *Menu::addToColl(Gui_Item::Type type, int width_px, int height_px, std:
 		if (updateVertices) {
 			colUpdateItems(height_px + new_item->GetPadding(), child_y);
 		}
-
 		Items.push_back(std::move(new_item));
 	} else {
 		Items.insert(Items.begin() + id, std::move(new_item));
@@ -106,17 +113,18 @@ std::unique_ptr<Gui_Item> Menu::createItem(Gui_Item::Type type, int width_px, in
 	std::unique_ptr<Gui_Item> new_item;
 
 	if (type == Gui_Item::Type::BUTTON) {
-		new_item = std::make_unique<Button>(width_px, height_px, child_x, child_y, name);
-		new_item->SetBgColor(1.0f, 0.0f, 0.0f);
+		new_item = std::make_unique<Button>(window, width_px, height_px, child_x, child_y, name);
 
 	} else if (type == Gui_Item::Type::TEXT_FIELD) {
 		new_item = std::make_unique<Text_Field>(width_px, height_px, child_x, child_y, name);
-		new_item->SetBgColor(0.0f, 0.0f, 1.0f);
+		new_item->SetBgColor(this->BgColor);
 
 	} else {
 		printf("ERROR::MENU: Gui_Item is not yet implemented\n");
 		exit(-1);
 	}
+
+	new_item->SetFgColor(this->FgColor);
 	return new_item;
 }
 
@@ -130,16 +138,30 @@ Gui_Item *Menu::AddItem(Gui_Item::Type type, int width_px, int height_px, std::s
 		new_item = addToRow(type, width_px, height_px, name, updateVertices, id);
 	}
 
-	if (id == -1) {
-		new_item->Menu_id = Items.size() - 1;
-
-	} else {
-		new_item->Menu_id = id;
+	for (size_t i = 0; i < Items.size(); ++i) {
+		Items[i]->Menu_id = i;
 	}
 
 	return new_item;
 }
 
-void Menu::RemoveItem(int id) { Items.erase(Items.begin() + id); }
+void Menu::UpdateItems() {
+	glm::ivec2 padding = colChildPadding(0, 0);
+	colUpdateItems(0, this->start_pos_y + padding[1]);
+}
+
+void Menu::RemoveItem(int id, bool update) {
+	Items.erase(Items.begin() + id);
+
+	for (size_t i = 0; i < Items.size(); ++i) {
+		Items[i]->Menu_id = i;
+	}
+
+	if (update) {
+		UpdateItems();
+	}
+}
 
 void Menu::SetLayout(Layout new_layout) { this->layout = new_layout; }
+
+void Menu::SetName(std::string name) { this->Name = name; }

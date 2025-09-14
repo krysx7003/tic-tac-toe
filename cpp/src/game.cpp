@@ -10,9 +10,8 @@ void Game::Init() {
 
 	curr_player = Player::O;
 
-	ResourceManager::LoadShader("line.vs", "line.frag", "line");
 	ResourceManager::LoadShader("piece.vs", "piece.frag", "piece");
-	ResourceManager::LoadShader("tile.vs", "tile.frag", "tile");
+	ResourceManager::LoadShader("flat_argb.vs", "flat_argb.frag", "argb");
 
 	ResourceManager::LoadTexture("X.png", true, "X");
 	ResourceManager::LoadTexture("O.png", true, "O");
@@ -221,7 +220,7 @@ bool Game::IsDraw() {
 			return false;
 		}
 	}
-	winner = 0;
+	winner = '-';
 	return true;
 }
 

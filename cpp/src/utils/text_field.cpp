@@ -12,11 +12,26 @@ void Text_Field::updateTextPos() {
 }
 
 void Text_Field::Draw() {
-	drawSquare();
-	text->RenderText(Text, size, start_pos_x + text_padding_x, start_pos_y + 10, scale);
+	if (!Visible)
+		return;
+
+	drawSquare(BgColor);
+	text->RenderText(Text, size, start_pos_x + text_padding_x, start_pos_y + 10, scale, FgColor);
 }
 
-void Text_Field::SetText(std::string new_text) { Text = new_text; }
+void Text_Field::SetText(std::string new_text) {
+	Text = new_text;
+	updateTextPos();
+}
+
+void Text_Field::SetTextf(std::string format, char data) {
+	char buffer[50];
+	sprintf(buffer, format.c_str(), data);
+	Text = buffer;
+
+	updateTextPos();
+}
+
 void Text_Field::SetScale(float scale) { this->scale = scale; }
 void Text_Field::SetTextSize(std::string text_size) {
 	this->size = text_size;

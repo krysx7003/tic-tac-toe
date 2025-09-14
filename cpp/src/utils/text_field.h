@@ -20,6 +20,7 @@ class Text_Field : public Gui_Item {
   public:
 	Text_Field(int width, int height, int start_pos_x, int start_pos_y, std::string text_str)
 		: Gui_Item(width, height, start_pos_x, start_pos_y) {
+		this->item_text = text_str;
 		Text = text_str;
 
 		text = TextRenderer::GetInstance();
@@ -28,6 +29,7 @@ class Text_Field : public Gui_Item {
 
 	void Draw() override;
 	void SetText(std::string new_text);
+	void SetTextf(std::string format, char data);
 	void SetScale(float scale);
 	void SetTextSize(std::string text_size);
 	void SetAlignmentHor(AlignmentHor alignment);
