@@ -15,20 +15,22 @@
 using json = nlohmann::json;
 using namespace std;
 
+GLFWwindow *window;
+
 Game game;
 Menu main_menu;
 Menu top_menu;
 
 int text_id;
 
-bool menu_visible = false;
+bool lock_visible = true;
 bool debug_visible;
 
 Text_Field *main_text;
 Text_Field *sub_text;
 Text_Field *player_text;
 Button *start_btn;
-Button *restart_btn;
+Button *restart_btn = nullptr;
 Button *exit_btn;
 Button *menu_btn;
 
@@ -45,7 +47,15 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void initMainMenu();
 void initPauseMenu();
+void initEndGameMenu();
+void initTopMenu();
 bool isValidInput(char c);
+
+void exit();
+void start();
+void menu();
+void restart();
+void resume();
 
 int main() {
 	config = ResourceManager::LoadConfig();
@@ -54,7 +64,7 @@ int main() {
 	debug_visible = config["debug_visible"];
 
 	if (gui) {
-		GLFWwindow *window = init();
+		window = init();
 		game.Init();
 
 		while (!glfwWindowShouldClose(window)) {
@@ -97,11 +107,16 @@ bool isValidInput(char c) {
 }
 
 void initMainMenu() {
-	main_menu = Menu(300, 480, 150, 80);
+	main_menu.SetName("main");
+	main_menu.SetBgColor("#282A2E");
+	main_menu.SetFgColor("#C5C8C6");
+	main_menu.SetOutColor("#0a0a0b");
+	main_menu.SetOutline(glm::bvec4(true));
 
 	main_text = dynamic_cast<Text_Field *>(
 		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 60, "Tic-Tac-Toe", false));
 	main_text->SetTextSize("big");
+	main_text->SetAlignmentHor(AlignmentHor::CENTER);
 
 	sub_text = dynamic_cast<Text_Field *>(
 		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "by Nap_Nap", false));
@@ -111,21 +126,78 @@ void initMainMenu() {
 	start_btn =
 		dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Start", false));
 	start_btn->button_text.SetTextSize("medium");
+	start_btn->SetOnClick(start);
 
 	exit_btn = dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit"));
 	exit_btn->button_text.SetTextSize("medium");
+	exit_btn->SetOnClick(exit);
 }
 
 void initPauseMenu() {
+	if (main_menu.Name == "pause")
+		return;
+
+	main_menu.SetName("pause");
 	main_text->SetText("Paused");
-	main_text->SetAlignmentHor(AlignmentHor::CENTER);
 
-	main_menu.RemoveItem(sub_text->Menu_id);
+	if (sub_text != nullptr) {
+		main_menu.RemoveItem(sub_text->Menu_id, false);
+		sub_text = nullptr;
+	}
+	start_btn->SetVisibility(true);
+	start_btn->button_text.SetText("Resume");
+	start_btn->SetOnClick(resume);
 
-	restart_btn = dynamic_cast<Button *>(
-		main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Restart", true, 2));
+	if (restart_btn == nullptr) {
+		restart_btn = dynamic_cast<Button *>(
+			main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Restart", true, 2));
+		restart_btn->button_text.SetTextSize("medium");
+		restart_btn->SetOnClick(restart);
+	}
+}
 
-	restart_btn->button_text.SetTextSize("medium");
+void initEndGameMenu() {
+	if (main_menu.Name == "end")
+		return;
+	initPauseMenu();
+	main_menu.SetName("end");
+
+	start_btn->SetVisibility(false);
+	main_text->SetText("Game ended");
+
+	sub_text = dynamic_cast<Text_Field *>(
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 40, "Sub", false, 1));
+
+	sub_text->SetPadding(0);
+	sub_text->SetTextSize("medium");
+	sub_text->SetAlignmentHor(AlignmentHor::CENTER);
+
+	if (game.GetWinner() != '-') {
+		sub_text->SetTextf("Winner %c", game.GetWinner());
+	} else {
+		sub_text->SetText("Draw");
+	}
+
+	lock_visible = true;
+	main_menu.UpdateItems();
+}
+
+void initTopMenu() {
+	top_menu.SetBgColor("#282A2E");
+	top_menu.SetFgColor("#C5C8C6");
+	top_menu.SetOutColor("#0a0a0b");
+
+	top_menu.SetOutline(glm::bvec4(false, false, true, false));
+	top_menu.SetOutlineWidth(2.0f);
+	top_menu.SetLayout(Menu::Layout::ROW);
+
+	menu_btn =
+		dynamic_cast<Button *>(top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu", false));
+	menu_btn->SetOutline(glm::bvec4(false, true, false, false));
+	menu_btn->SetOnClick(menu);
+
+	player_text = dynamic_cast<Text_Field *>(
+		top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Current player O"));
 }
 
 GLFWwindow *init() {
@@ -165,14 +237,11 @@ GLFWwindow *init() {
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetKeyCallback(window, key_callback);
 
-	top_menu = Menu(600, 40, 0, 600);
-	top_menu.SetLayout(Menu::Layout::ROW);
-	menu_btn =
-		dynamic_cast<Button *>(top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu", false));
-	player_text = dynamic_cast<Text_Field *>(
-		top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Current player O"));
+	main_menu = Menu(window, 300, 480, 150, 80);
+	top_menu = Menu(window, 600, 40, 0, 600);
 
 	initMainMenu();
+	initTopMenu();
 
 	return window;
 }
@@ -182,9 +251,17 @@ void render(GLFWwindow *window) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	game.Render();
-	if (menu_visible) {
-		main_menu.Draw();
+
+	if (!game.active) {
+		initEndGameMenu();
 	}
+
+	if (lock_visible) {
+		main_menu.SetVisibility(true);
+	}
+
+	main_menu.Draw();
+
 	top_menu.Draw();
 
 	if (debug_visible) {
@@ -232,10 +309,8 @@ static void cursor_position_callback(GLFWwindow *window, double xpos, double ypo
 		return;
 
 	currX = (xpos / 300) - 1;
-	if (ypos >= top_menu_h) {
-		ypos -= top_menu_h;
-		currY = -((ypos / 300) - 1);
-	}
+	ypos -= top_menu_h;
+	currY = -((ypos / 300) - 1);
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
@@ -244,24 +319,52 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 	if (io.WantCaptureMouse)
 		return;
 
-	if (menu_visible)
+	if (main_menu.Visible)
+		return;
+
+	if (currY >= 1.0f)
 		return;
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		game.ChosenTile(currX, currY);
 		click_count++;
 
-		char buffer[50];
-		sprintf(buffer, "Current player %c", game.GetPlayer());
-		player_text->SetText(buffer);
+		player_text->SetTextf("Current player %c", game.GetPlayer());
 	}
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+	if (lock_visible)
+		return;
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-		menu_visible = !menu_visible;
-	}
-	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
-		initPauseMenu();
+		main_menu.SetVisibility(!main_menu.Visible);
 	}
 }
+
+void exit() { glfwSetWindowShouldClose(window, true); }
+
+void start() {
+	lock_visible = false;
+
+	main_menu.SetVisibility(false);
+	initPauseMenu();
+}
+
+void restart() {
+	game.Restart();
+
+	lock_visible = false;
+	main_menu.SetVisibility(false);
+
+	initPauseMenu();
+}
+
+void menu() {
+	if (lock_visible)
+		return;
+
+	main_menu.SetVisibility(true);
+}
+
+void resume() { main_menu.SetVisibility(false); }
