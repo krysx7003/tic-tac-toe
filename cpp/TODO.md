@@ -19,15 +19,15 @@
 - [ ] Move game logic form main to Game
 - [ ] Move tile related logic to Tile
 - [x] Yoink TetxRenderer
-- [ ] Make window/menu class(Custom shape rectangle)
-- [ ] Make button class(Custom shape rectangle, changes color when mouse is
+- [x] Make window/menu class(Custom shape rectangle)
+- [x] Make button class(Custom shape rectangle, changes color when mouse is
         over it, can be clicked)
-- [ ] Add start menu(Start, Exit)
+- [x] Add start menu(Start, Exit)
 - [ ] Start allows to set users(human/AI)
-- [ ] Add menu bar(Always active menu, displaying current player and pause menu button)
-- [ ] Open pause menu either by ESC or button
-- [ ] Add pause menu(Resume, Restart, Exit)
-- [ ] Add end game menu
+- [x] Add menu bar(Always active menu, displaying current player and pause menu button)
+- [x] Open pause menu either by ESC or button
+- [x] Add pause menu(Resume, Restart, Exit)
+- [x] Add end game menu
 
 ## Game rules
 
