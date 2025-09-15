@@ -45,6 +45,7 @@ add_executable(tic-tac-toe
     src/main.cpp
     src/game.cpp
     src/board.cpp
+    src/tile.cpp
     ${UTIL_SOURCES}
     ${IMGUI_SOURCES}
     ${GLAD_SOURCE}

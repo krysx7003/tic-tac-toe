@@ -46,6 +46,10 @@ class Gui_Item {
 		window_width = config["window"]["width"].get<int>();
 		window_height = config["window"]["height"].get<int>();
 
+		SetBgColor("#282A2E");
+		SetFgColor("#C5C8C6");
+		SetOutColor("#0a0a0b");
+
 		setupVertices();
 	}
 	Gui_Item() {};

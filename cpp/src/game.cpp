@@ -22,15 +22,14 @@ void Game::Init() {
 	ResourceManager::LoadTexture("d_l_line.png", true, "diagonal_l");
 
 	board.Init();
-	board.SetupBuffers();
 }
 
 void Game::Start() {
+	std::vector<char> state = board.GetTilesState();
 	while (active) {
 		system("clear");
 
 		printf("Current player: %c", GetPlayer());
-		char *state = board.GetTilesState();
 		printf("\n-------------\n");
 		printf("| %c | %c | %c | | 0 | 1 | 2 |\n----------\n", state[0], state[1], state[2]);
 		printf("| %c | %c | %c | | 3 | 4 | 5 |\n----------\n", state[3], state[4], state[5]);
@@ -46,8 +45,7 @@ void Game::Start() {
 			scanf("%d", &id);
 		}
 	}
-	if (!IsDraw()) {
-		char *state = board.GetTilesState();
+	if (!IsDraw(state)) {
 		printf("\n-------------\n");
 		printf("| %c | %c | %c |\n----------\n", state[0], state[1], state[2]);
 		printf("| %c | %c | %c |\n----------\n", state[3], state[4], state[5]);
@@ -73,17 +71,15 @@ void Game::Restart() {
 	winner = -1;
 	active = true;
 
-	board.SetTilesState();
+	board.RestetTiles();
 }
 
-bool Game::ChosenTile(float x, float y) {
+bool Game::ChosenTile(double x, double y) {
 	if (!active) {
 		return false;
 	}
 
-	int col = board.GetTileCol(x);
-	int row = board.GetTileRow(y) * 3;
-	int tileId = col + row;
+	int tileId = board.TileUnderMouse(x, y);
 
 	if (board.TakeTile(tileId, curr_player)) {
 		swapPlayer();
@@ -116,44 +112,46 @@ void Game::swapPlayer() {
 		curr_player = Player::O;
 	}
 
-	if (WinCondition()) {
+	std::vector<char> state = board.GetTilesState();
+	if (WinCondition(state)) {
 		active = false;
-	} else if (IsDraw()) {
+	} else if (IsDraw(state)) {
 		active = false;
 	}
 }
 
 void Game::setWinner(char state) {
-	if (state == TileState::TakenO) {
+	if (state == Tile::State::TakenO) {
 		winner = Player::O;
-	} else if (state == TileState::TakenX) {
+	} else if (state == Tile::State::TakenX) {
 		winner = Player::X;
 	}
 }
 
-bool Game::WinCondition() {
+bool Game::WinCondition(std::vector<char> state) {
 	for (int i = 0; i < board.width; i++) {
-		if (horizontalLine(i))
+		if (horizontalLine(i, state))
 			return true;
-		if (verticalLine(i))
+		if (verticalLine(i, state))
 			return true;
 	}
 
-	if (diagonalLeftLine())
+	if (diagonalLeftLine(state))
 		return true;
 
-	if (diagonalRightLine())
+	if (diagonalRightLine(state))
 		return true;
+
 	return false;
 }
 
-bool Game::verticalLine(int col) {
-	char first = board.tiles_state[0 + col];
-	if (first == TileState::Empty)
+bool Game::verticalLine(int col, std::vector<char> state) {
+	char first = state[0 + col];
+	if (first == Tile::State::Empty)
 		return false;
 
 	for (int row = 1; row < board.width; row++) {
-		if (board.tiles_state[col + row * 3] != first)
+		if (state[col + row * 3] != first)
 			return false;
 	}
 
@@ -166,13 +164,13 @@ bool Game::verticalLine(int col) {
 	return true;
 }
 
-bool Game::horizontalLine(int row) {
-	char first = board.tiles_state[0 + row * 3];
-	if (first == TileState::Empty)
+bool Game::horizontalLine(int row, std::vector<char> state) {
+	char first = state[0 + row * 3];
+	if (first == Tile::State::Empty)
 		return false;
 
 	for (int col = 1; col < board.width; col++) {
-		if (board.tiles_state[col + row * 3] != first)
+		if (state[col + row * 3] != first)
 			return false;
 	}
 
@@ -185,10 +183,10 @@ bool Game::horizontalLine(int row) {
 	return true;
 }
 
-bool Game::diagonalLeftLine() {
-	char topLeft = board.tiles_state[0]; // TOOD - Replace with enum
-	if (topLeft != TileState::Empty) {
-		if (board.tiles_state[4] == topLeft && board.tiles_state[8] == topLeft) {
+bool Game::diagonalLeftLine(std::vector<char> state) {
+	char topLeft = state[0]; // TOOD - Replace with enum
+	if (topLeft != Tile::State::Empty) {
+		if (state[4] == topLeft && state[8] == topLeft) {
 			setWinner(topLeft);
 			texture = "diagonal_l";
 			texture_pos = glm::vec2(0, top_menu_height);
@@ -199,10 +197,10 @@ bool Game::diagonalLeftLine() {
 	}
 	return false;
 }
-bool Game::diagonalRightLine() {
-	char topRight = board.tiles_state[2]; // TOOD - Replace with enum
-	if (topRight != TileState::Empty) {
-		if (board.tiles_state[4] == topRight && board.tiles_state[6] == topRight) {
+bool Game::diagonalRightLine(std::vector<char> state) {
+	char topRight = state[2]; // TOOD - Replace with enum
+	if (topRight != Tile::State::Empty) {
+		if (state[4] == topRight && state[6] == topRight) {
 			setWinner(topRight);
 			texture = "diagonal_r";
 			texture_pos = glm::vec2(0, top_menu_height);
@@ -214,9 +212,9 @@ bool Game::diagonalRightLine() {
 	return false;
 }
 
-bool Game::IsDraw() {
+bool Game::IsDraw(std::vector<char> state) {
 	for (int i = 0; i < board.tiles_num; i++) {
-		if (board.tiles_state[i] == TileState::Empty) {
+		if (state[i] == Tile::State::Empty) {
 			return false;
 		}
 	}

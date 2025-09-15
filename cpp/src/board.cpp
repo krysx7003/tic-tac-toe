@@ -12,29 +12,30 @@ void Board::Init() {
 	boardGui = config["gui"];
 
 	float top_menu_height = config["top_menu"]["height"];
-	float offset = top_menu_height / 320.0f;
 
 	tiles_num = config["board"]["tiles_num"];
 	width = config["board"]["width"];
 	tile_size = 2.0f / width;
 	tile_width = config["board"]["tile_width"];
-	float line_top = tile_width - top_menu_height;
-	float line_bot = tile_width + top_menu_height;
 	tile_size_px = glm::vec2(tile_width, tile_width);
 
-	tiles_state = new char[tiles_num];
-
-	SetTilesState();
+	Tiles_n = new Tile[tiles_num];
 
 	if (boardGui) {
 		for (int row = 0; row < width; row++) {
 			for (int col = 0; col < width; col++) {
-				addTile(row, col);
-				tiles_pos.push_back({col * 200, row * 200 + top_menu_height + 5});
+				int id = col + row * 3;
+				int x = col * tile_width;
+				int y = row * tile_width + top_menu_height + 5;
+				Tiles_n[id] = Tile(x, y, tile_width, tile_width);
 				// The +5 pulled directly out of my ass
 				// (I have no idea why does it work, but it does)
 			}
 		}
+
+		float offset = top_menu_height / 320.0f;
+		float line_top = tile_width - top_menu_height;
+		float line_bot = tile_width + top_menu_height;
 
 		std::vector<glm ::vec3> grid;
 		grid.push_back({1.0f / 3, 1.0f - offset, 0.0f});
@@ -57,43 +58,13 @@ void Board::Init() {
 	}
 }
 
-Board::Board() { SetTilesState(); }
-
-void Board::SetTilesState() {
-	for (int row = 0; row < width; row++) {
-		for (int col = 0; col < width; col++) {
-			tiles_state[(row * 3) + col] = TileState::Empty;
-		}
-	}
-}
-
 void Board::Render() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	for (int i = 0; i < tiles_num; i++) {
-		if (tiles_state[i] == TileState::Empty) {
-			continue;
-		}
-		Texture2D texture;
-		if (tiles_state[i] == TileState::TakenO) {
-			texture = ResourceManager::GetTexture("O");
-
-		} else {
-			texture = ResourceManager::GetTexture("X");
-		}
-		Renderer->DrawSprite(texture, tiles_pos[i], tile_size_px, 0.0f,
-							 glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		Tiles_n[i].Render();
 	}
-
-	// Shader shader = ResourceManager::GetShader("argb").Use();
-	//
-	// glBindVertexArray(VAO_tiles);
-	// for (int i = 0; i < BOARD_SIZE; i++) {
-	// 	shader.SetVector3f("ourColor", 1.0f, 1.0f, 1.0f, false);
-	// 	glDrawArrays(GL_TRIANGLES, i * 6, 6);
-	// }
-
 	lines.Draw(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 
@@ -104,69 +75,38 @@ void Board::RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 te
 						 glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
 }
 
-void Board::SetupBuffers() {
-	glGenVertexArrays(1, &VAO_tiles);
-	glGenBuffers(1, &VBO_tiles);
-
-	glBindVertexArray(VAO_tiles);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_tiles);
-	glBufferData(GL_ARRAY_BUFFER, tiles.size() * sizeof(glm::vec3), tiles.data(), GL_DYNAMIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
-void Board::addTile(int row, int col) {
-	GLfloat left = -1.0f + tile_size * col;
-	GLfloat right = left + tile_size;
-	GLfloat top = 1.0f - tile_size * row;
-	GLfloat bottom = top - tile_size;
-
-	tiles.push_back({left, top, 0.0f});
-	tiles.push_back({right, top, 0.0f});
-	tiles.push_back({right, bottom, 0.0f});
-
-	tiles.push_back({left, top, 0.0f});
-	tiles.push_back({right, bottom, 0.0f});
-	tiles.push_back({left, bottom, 0.0f});
-}
-
 bool Board::TakeTile(int pos, char player) {
-	if (tiles_state[pos] != TileState::Empty) {
+	if (Tiles_n[pos].State != Tile::State::Empty) {
 		return false;
 	}
 	if (player == Player::O) {
-		tiles_state[pos] = TileState::TakenO;
+		Tiles_n[pos].State = Tile::State::TakenO;
 	} else {
-		tiles_state[pos] = TileState::TakenX;
+		Tiles_n[pos].State = Tile::State::TakenX;
 	}
 	return true;
 }
 
-int Board::GetTileCol(float pos) {
-	if (pos <= -0.33f)
-		return 0;
-	if (pos < 0.33f && pos > -0.33f)
-		return 1;
-	if (pos >= 0.33f)
-		return 2;
-
-	return -1;
+void Board::RestetTiles() {
+	for (int i = 0; i < tiles_num; i++) {
+		Tiles_n[i].State = Tile::State::Empty;
+	}
 }
 
-int Board::GetTileRow(float pos) {
-	if (pos >= 0.33f)
-		return 0;
-	if (pos < 0.33f && pos > -0.33f)
-		return 1;
-	if (pos <= -0.33f)
-		return 2;
+int Board::TileUnderMouse(double x, double y) {
+	int i = 0;
+	for (; i < tiles_num; i++) {
+		if (Tiles_n[i].IsMouseOn(x, y))
+			break;
+	}
 
-	return -1;
+	return i;
 }
 
-int Board::GetSize() { return tiles.size(); }
-
-char *Board::GetTilesState() { return tiles_state; }
+std::vector<char> Board::GetTilesState() {
+	std::vector<char> tab(tiles_num);
+	for (int i = 0; i < tiles_num; i++) {
+		tab[i] = Tiles_n[i].State;
+	}
+	return tab;
+}

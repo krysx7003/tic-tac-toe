@@ -14,11 +14,10 @@ class Game {
 	glm::vec2 texture_size = glm::vec2(0, 0);
 	std::string texture;
 
-	bool verticalLine(int col);
-	bool horizontalLine(int row);
-	bool diagonalLine();
-	bool diagonalLeftLine();
-	bool diagonalRightLine();
+	bool verticalLine(int col, std::vector<char> state);
+	bool horizontalLine(int row, std::vector<char> state);
+	bool diagonalLeftLine(std::vector<char> state);
+	bool diagonalRightLine(std::vector<char> state);
 
 	void setWinner(char state);
 	void swapPlayer();
@@ -32,10 +31,10 @@ class Game {
 
 	void Start();
 	void Render();
-	bool ChosenTile(float col, float row);
+	bool ChosenTile(double x, double y);
 	bool ChosenTile(int tileId);
-	bool WinCondition();
-	bool IsDraw();
+	bool WinCondition(std::vector<char> state);
+	bool IsDraw(std::vector<char> state);
 	short GetLastTile();
 	void Restart();
 

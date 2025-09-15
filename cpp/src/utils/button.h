@@ -19,8 +19,11 @@ class Button : public Gui_Item {
 		  button_text(width, height, start_pos_x, start_pos_y, text) {
 
 		this->item_text = text;
-		this->SetOutline(glm::bvec4(true));
-		this->SetBgColor("#1e1f22");
+		SetOutline(glm::bvec4(true));
+		SetOutlineWidth(1.0f);
+		SetBgColor("#1e1f22");
+		SetOutColor("#FFFFFF");
+
 		button_text.SetBgColor(this->BgColor);
 		button_text.SetAlignmentHor(AlignmentHor::CENTER);
 	}

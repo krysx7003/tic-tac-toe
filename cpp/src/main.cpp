@@ -119,9 +119,6 @@ bool isValidInput(char c) {
 
 void initMainMenu() {
 	main_menu.SetName("main");
-	main_menu.SetBgColor("#282A2E");
-	main_menu.SetFgColor("#C5C8C6");
-	main_menu.SetOutColor("#0a0a0b");
 	main_menu.SetOutline(glm::bvec4(true));
 
 	main_text = dynamic_cast<Text_Field *>(
@@ -194,12 +191,7 @@ void initEndGameMenu() {
 }
 
 void initTopMenu() {
-	top_menu.SetBgColor("#282A2E");
-	top_menu.SetFgColor("#C5C8C6");
-	top_menu.SetOutColor("#0a0a0b");
-
 	top_menu.SetOutline(glm::bvec4(false, false, true, false));
-	top_menu.SetOutlineWidth(2.0f);
 	top_menu.SetLayout(Menu::Layout::ROW);
 
 	menu_btn =
@@ -273,6 +265,7 @@ void render(GLFWwindow *window) {
 
 	main_menu.Draw();
 
+	player_text->SetTextf("Current player %c", game.GetPlayer());
 	top_menu.Draw();
 
 	if (debug_visible) {
@@ -292,11 +285,11 @@ void render_debug_frame(GLFWwindow *window) {
 
 	ImGui::Text("%f.02 ms/frame\n", spf);
 
-	ImGui::Text("Position x: %.2f, y: %.2f", currX, currY);
+	ImGui::Text("Position x: %.0f, y: %.0f", currX, currY);
 	ImGui::Text("Clicked tile: %d", game.GetLastTile());
 	ImGui::Text("Current player: %c", game.GetPlayer());
 
-	char *state = game.board.GetTilesState();
+	std::vector<char> state = game.board.GetTilesState();
 	ImGui::Text("| %c | %c | %c |\n-------------", state[0], state[1], state[2]);
 	ImGui::Text("| %c | %c | %c |\n-------------", state[3], state[4], state[5]);
 	ImGui::Text("| %c | %c | %c |\n-------------", state[6], state[7], state[8]);
@@ -320,9 +313,8 @@ static void cursor_position_callback(GLFWwindow *window, double xpos, double ypo
 	if (io.WantCaptureMouse)
 		return;
 
-	currX = (xpos / 300) - 1;
-	ypos -= top_menu_h;
-	currY = -((ypos / 300) - 1);
+	currX = xpos;
+	currY = ypos;
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
@@ -334,14 +326,12 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 	if (main_menu.Visible)
 		return;
 
-	if (currY >= 1.0f)
+	if (currY >= 600.0f)
 		return;
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		game.ChosenTile(currX, currY);
 		click_count++;
-
-		player_text->SetTextf("Current player %c", game.GetPlayer());
 	}
 }
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../thirdparty/glad/glad.h"
 
 #include <glm/glm.hpp>

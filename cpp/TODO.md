@@ -16,12 +16,12 @@
 - [x] Symlink ./resources to build dirs
 - [x] Remove includes dir
 - [x] Methods should start from uppercase
-- [ ] Move game logic form main to Game
-- [ ] Add class for drawing simple shapes (handle Vao,vertices etc..)
-- [ ] Move line drawing logic to
-- [ ] Move rect drawing logic to
-- [ ] Move tile related logic to Tile
-- [ ] Add fps counter
+- [x] Move game logic form main to Game
+- [x] Add class for drawing simple shapes (handle Vao,vertices etc..)
+- [x] Move line drawing logic to
+- [x] Move rect drawing logic to
+- [x] Move tile related logic to Tile
+- [x] Add fps counter
 - [x] Yoink TetxRenderer
 - [x] Make window/menu class(Custom shape rectangle)
 - [x] Make button class(Custom shape rectangle, changes color when mouse is
@@ -34,7 +34,7 @@
 - [x] Add pause menu(Resume, Restart, Exit)
 - [x] Add end game menu
 - [ ] Split current implementation of menu to Row\_Menu and Col\_Menu
-- [ ] Fix draw displaying win
+- [x] Fix draw displaying win
 
 ## Game rules
 
@@ -43,7 +43,7 @@
 - X can be placed on empty file but not on file with O
 - O can be placed on empty file but not on file with X
 - Players rounds alternate
-- One player only places X other OC
+- One player only places X other O
 
 ## Win condition
 

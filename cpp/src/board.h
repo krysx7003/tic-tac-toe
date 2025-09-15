@@ -23,32 +23,25 @@ class Board {
 	float tile_width;
 	glm::vec2 tile_size_px;
 
-	std::vector<glm ::vec3> tiles;
-	std::vector<glm ::vec2> tiles_pos;
-	GLuint VAO_tiles, VBO_tiles;
 	bool boardGui = false;
 
 	SpriteRenderer *Renderer;
 	Line lines;
 
-	void addTile(int row, int col);
-
   public:
+	Tile *Tiles_n;
 	int tiles_num;
 	int width;
-	char *tiles_state;
 
-	Board();
+	Board() { Tiles_n = new Tile[tiles_num]; };
 	void Init();
 
-	void SetupBuffers();
 	void Render();
 	void RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size);
 	bool TakeTile(int pos, char player);
-	void SetTilesState();
+	void RestetTiles();
 
-	char *GetTilesState();
-	int GetSize();
-	int GetTileCol(float pos);
-	int GetTileRow(float pos);
+	std::vector<char> GetTilesState();
+
+	int TileUnderMouse(double x, double y);
 };
