@@ -35,6 +35,8 @@ set(UTIL_SOURCES
     src/utils/text_field.cpp
     src/utils/button.cpp
     src/utils/text_renderer.cpp
+    src/utils/rect.cpp
+    src/utils/line.cpp
 )
 
 set(GLAD_SOURCE src/thirdparty/glad.c)

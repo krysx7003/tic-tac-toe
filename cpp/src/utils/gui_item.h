@@ -4,13 +4,13 @@
 #include <glm/ext/vector_float3.hpp>
 
 #include "../thirdparty/glad/glad.h"
-#include "resource_manager.h"
+#include "line.h"
+#include "rect.h"
 #include <string>
 #include <vector>
 
 class Gui_Item {
 
-	GLuint VAO_Bg, VBO_Bg;
 	GLuint VAO_lines, VBO_lines;
 
   protected:
@@ -19,7 +19,8 @@ class Gui_Item {
 	glm::vec4 OutColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::bvec4 outlines = glm::vec4(false);
 
-	float outline_width = 1.0f;
+	Rect background;
+	Line outline;
 
 	int height = 0;
 	int width = 0;
@@ -29,13 +30,6 @@ class Gui_Item {
 	float window_height;
 	int padding_top = 15;
 
-	std::vector<glm::vec3> background_vert;
-	std::vector<glm::vec3> outline_vert;
-
-	void drawSquare(glm::vec4 color);
-	void drawOutline();
-
-	void setupBuffer();
 	void setupVertices();
 	glm::vec4 hexToColor(std::string color);
 
@@ -49,8 +43,8 @@ class Gui_Item {
 		: width(width), height(height), start_pos_x(start_pos_x), start_pos_y(start_pos_y) {
 
 		json config = ResourceManager::Config;
-		window_width = config["window"]["width"].get<int>() / 2.0f;
-		window_height = config["window"]["height"].get<int>() / 2.0f;
+		window_width = config["window"]["width"].get<int>();
+		window_height = config["window"]["height"].get<int>();
 
 		setupVertices();
 	}

@@ -1,6 +1,5 @@
 #include "board.h"
 
-#include "utils/resource_manager.h"
 #include "utils/shader.h"
 #include "utils/texture.h"
 
@@ -37,6 +36,7 @@ void Board::Init() {
 			}
 		}
 
+		std::vector<glm ::vec3> grid;
 		grid.push_back({1.0f / 3, 1.0f - offset, 0.0f});
 		grid.push_back({1.0f / 3, -1.0f, 0.0f});
 		grid.push_back({-1.0f / 3, 1.0f - offset, 0.0f});
@@ -46,6 +46,9 @@ void Board::Init() {
 		grid.push_back({-1.0f, line_top / 640.0f, 0.0f});
 		grid.push_back({1.0f, -line_bot / 640.0f, 0.0f});
 		grid.push_back({-1.0f, -line_bot / 640.0f, 0.0f});
+
+		lines.Init(grid);
+		lines.SetWidth(10.0f);
 
 		glm::mat4 projection = glm::ortho(0.0f, 600.0f, 640.0f, 0.0f, -1.0f, 1.0f);
 		ResourceManager::GetShader("piece").Use().SetInteger("image", 0);
@@ -91,12 +94,7 @@ void Board::Render() {
 	// 	glDrawArrays(GL_TRIANGLES, i * 6, 6);
 	// }
 
-	Shader line_shader = ResourceManager::GetShader("argb").Use();
-
-	line_shader.SetVector4f("ourColor", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), false);
-	glBindVertexArray(VAO_lines);
-	glLineWidth(10.0f);
-	glDrawArrays(GL_LINES, 0, grid.size());
+	lines.Draw(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 
 void Board::RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size) {
@@ -107,16 +105,6 @@ void Board::RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 te
 }
 
 void Board::SetupBuffers() {
-	glGenVertexArrays(1, &VAO_lines);
-	glGenBuffers(1, &VBO_lines);
-
-	glBindVertexArray(VAO_lines);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_lines);
-	glBufferData(GL_ARRAY_BUFFER, grid.size() * sizeof(glm::vec3), grid.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-	glEnableVertexAttribArray(0);
-
 	glGenVertexArrays(1, &VAO_tiles);
 	glGenBuffers(1, &VBO_tiles);
 

@@ -8,12 +8,12 @@ void Menu::Draw() {
 	if (!Visible)
 		return;
 
-	this->drawSquare(BgColor);
+	background.Draw(BgColor);
 
 	for (auto &item : itemsDraw) {
 		item->Draw();
 	}
-	drawOutline();
+	outline.Draw(OutColor, outlines);
 }
 
 void Menu::updateDrawCopy() {

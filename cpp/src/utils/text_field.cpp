@@ -15,7 +15,7 @@ void Text_Field::Draw() {
 	if (!Visible)
 		return;
 
-	drawSquare(BgColor);
+	background.Draw(BgColor);
 	text->RenderText(Text, size, start_pos_x + text_padding_x, start_pos_y + 10, scale, FgColor);
 }
 

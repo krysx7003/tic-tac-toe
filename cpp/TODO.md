@@ -17,17 +17,24 @@
 - [x] Remove includes dir
 - [x] Methods should start from uppercase
 - [ ] Move game logic form main to Game
+- [ ] Add class for drawing simple shapes (handle Vao,vertices etc..)
+- [ ] Move line drawing logic to
+- [ ] Move rect drawing logic to
 - [ ] Move tile related logic to Tile
+- [ ] Add fps counter
 - [x] Yoink TetxRenderer
 - [x] Make window/menu class(Custom shape rectangle)
 - [x] Make button class(Custom shape rectangle, changes color when mouse is
         over it, can be clicked)
 - [x] Add start menu(Start, Exit)
+- [ ] Add spinner class(On click expands box with buttons)
 - [ ] Start allows to set users(human/AI)
 - [x] Add menu bar(Always active menu, displaying current player and pause menu button)
 - [x] Open pause menu either by ESC or button
 - [x] Add pause menu(Resume, Restart, Exit)
 - [x] Add end game menu
+- [ ] Split current implementation of menu to Row\_Menu and Col\_Menu
+- [ ] Fix draw displaying win
 
 ## Game rules
 

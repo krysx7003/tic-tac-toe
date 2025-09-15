@@ -36,6 +36,7 @@ Button *menu_btn;
 
 json config;
 double currX, currY;
+double spf = 0;
 int click_count = 0;
 int top_menu_h = 0;
 
@@ -67,7 +68,17 @@ int main() {
 		window = init();
 		game.Init();
 
+		double lastTime = glfwGetTime();
+		int nbFrames = 0;
 		while (!glfwWindowShouldClose(window)) {
+			double currentTime = glfwGetTime();
+			nbFrames++;
+			if (currentTime - lastTime >= 1.0) {
+				spf = 1000.0 / double(nbFrames);
+				nbFrames = 0;
+				lastTime += 1.0;
+			}
+
 			render(window);
 		}
 		ImGui_ImplOpenGL3_Shutdown();
@@ -279,7 +290,8 @@ void render_debug_frame(GLFWwindow *window) {
 
 	ImGui::Begin("Debug");
 
-	ImGui::Text("Click count: %d", click_count);
+	ImGui::Text("%f.02 ms/frame\n", spf);
+
 	ImGui::Text("Position x: %.2f, y: %.2f", currX, currY);
 	ImGui::Text("Clicked tile: %d", game.GetLastTile());
 	ImGui::Text("Current player: %c", game.GetPlayer());

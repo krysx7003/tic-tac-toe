@@ -4,39 +4,34 @@ void Button::Draw() {
 	if (!Visible)
 		return;
 
-	this->drawSquare(BgColor);
+	background.Draw(BgColor);
 	this->button_text.Draw();
 
 	if (isMouseOn()) {
-		this->drawSquare(glm::vec4(1.0f, 1.0f, 1.0f, 0.25f));
+		background.Draw(glm::vec4(1.0f, 1.0f, 1.0f, 0.25f));
+		bool isMousePressed = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
 
-		if (isMouseOn()) {
-			this->drawSquare(glm::vec4(1.0f, 1.0f, 1.0f, 0.25f));
-			bool isMousePressed =
-				(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
-
-			if (isMousePressed && !wasMousePressed) {
-				isClickHandled = false;
-			}
-
-			if (isMousePressed && !isClickHandled) {
-				On_Click();
-				isClickHandled = true;
-			}
-
-			wasMousePressed = isMousePressed;
-		} else {
-			wasMousePressed = false;
+		if (isMousePressed && !wasMousePressed) {
 			isClickHandled = false;
 		}
+
+		if (isMousePressed && !isClickHandled) {
+			On_Click();
+			isClickHandled = true;
+		}
+
+		wasMousePressed = isMousePressed;
+	} else {
+		wasMousePressed = false;
+		isClickHandled = false;
 	}
 
-	this->drawOutline();
+	outline.Draw(OutColor, outlines);
 }
 bool Button::isMouseOn() {
 	double mouseX, mouseY;
 	glfwGetCursorPos(window, &mouseX, &mouseY);
-	int y = (window_height * 2) - mouseY;
+	int y = (window_height)-mouseY;
 	int x = mouseX;
 
 	if (start_pos_x > x || x > start_pos_x + width) {

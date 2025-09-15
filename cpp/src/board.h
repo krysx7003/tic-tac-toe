@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "tile.h"
+#include "utils/line.h"
 #include "utils/sprite.h"
 
 #include "thirdparty/glad/glad.h"
@@ -22,13 +23,13 @@ class Board {
 	float tile_width;
 	glm::vec2 tile_size_px;
 
-	std::vector<glm ::vec3> grid;
 	std::vector<glm ::vec3> tiles;
 	std::vector<glm ::vec2> tiles_pos;
-	GLuint VAO_lines, VBO_lines;
 	GLuint VAO_tiles, VBO_tiles;
 	bool boardGui = false;
+
 	SpriteRenderer *Renderer;
+	Line lines;
 
 	void addTile(int row, int col);
 
