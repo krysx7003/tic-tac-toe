@@ -33,4 +33,6 @@ class Text_Field : public Gui_Item {
 	void SetScale(float scale);
 	void SetTextSize(std::string text_size);
 	void SetAlignmentHor(AlignmentHor alignment);
+
+	std::string GetText();
 };

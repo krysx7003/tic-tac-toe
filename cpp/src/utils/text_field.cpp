@@ -41,3 +41,5 @@ void Text_Field::SetAlignmentHor(AlignmentHor alignment) {
 	this->alignment = alignment;
 	updateTextPos();
 }
+
+std::string Text_Field::GetText() { return this->Text; }

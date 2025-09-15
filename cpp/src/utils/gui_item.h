@@ -14,7 +14,6 @@ class Gui_Item {
 	GLuint VAO_lines, VBO_lines;
 
   protected:
-	glm::vec4 BgColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	glm::vec3 FgColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec4 OutColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::bvec4 outlines = glm::vec4(false);
@@ -30,14 +29,16 @@ class Gui_Item {
 	float window_height;
 	int padding_top = 15;
 
-	void setupVertices();
+	virtual void updatePos();
 	glm::vec4 hexToColor(std::string color);
 
   public:
+	glm::vec4 BgColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	int Menu_id;
 	std::string item_text;
 	bool Visible = true;
-	enum class Type { BUTTON, TEXT_FIELD, MENU };
+	enum class Type { BUTTON, TEXT_FIELD, MENU, DROPDOWN };
+	Type ItemType;
 
 	Gui_Item(int width, int height, int start_pos_x, int start_pos_y)
 		: width(width), height(height), start_pos_x(start_pos_x), start_pos_y(start_pos_y) {
@@ -50,17 +51,18 @@ class Gui_Item {
 		SetFgColor("#C5C8C6");
 		SetOutColor("#0a0a0b");
 
-		setupVertices();
+		updatePos();
 	}
 	Gui_Item() {};
 
-	void SetBgColor(std::string color);
-	void SetBgColor(glm::vec4 color);
-	void SetFgColor(std::string color);
-	void SetFgColor(glm::vec3 color);
+	virtual void SetBgColor(std::string color);
+	virtual void SetBgColor(glm::vec4 color);
+	virtual void SetFgColor(std::string color);
+	virtual void SetFgColor(glm::vec3 color);
 	void SetOutColor(std::string color);
 	void SetOutColor(glm::vec4 color);
 
+	void SetType(Type type);
 	void SetVisibility(bool visible);
 	void SetPadding(int top);
 	void SetOutline(glm::bvec4 outline);

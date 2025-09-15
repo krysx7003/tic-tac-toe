@@ -5,9 +5,10 @@
 
 class Button : public Gui_Item {
 	GLFWwindow *window;
-	void (*on_clik_func)();
+	std::function<void()> on_click_func;
 	bool wasMousePressed = false;
 	bool isClickHandled = false;
+	glm::vec4 HiColor = glm::vec4(1.0f, 1.0f, 1.0f, 0.25f);
 
 	bool isMouseOn();
 
@@ -27,10 +28,21 @@ class Button : public Gui_Item {
 		button_text.SetBgColor(this->BgColor);
 		button_text.SetAlignmentHor(AlignmentHor::CENTER);
 	}
+	Button() {};
 
 	void Draw() override;
+	bool Handle();
 	void On_Click();
 
+	void SetBgColor(std::string color) override;
+	void SetBgColor(glm::vec4 color) override;
+	void SetFgColor(std::string color) override;
+	void SetFgColor(glm::vec3 color) override;
+	void SetHiColor(std::string hex_color);
+
+	void SetText(std::string text);
 	void SetStartY(int start_y) override;
-	void SetOnClick(void (*func)());
+	void SetOnClick(std::function<void()> func);
+
+	std::string GetText();
 };

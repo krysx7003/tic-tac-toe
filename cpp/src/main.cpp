@@ -10,6 +10,8 @@
 
 #include "game.h"
 #include "utils/button.h"
+#include "utils/dropdown.h"
+#include "utils/gui_system.h"
 #include "utils/menu.h"
 
 using json = nlohmann::json;
@@ -33,6 +35,8 @@ Button *start_btn;
 Button *restart_btn = nullptr;
 Button *exit_btn;
 Button *menu_btn;
+Text_Field *player1_text, *player2_text;
+Dropdown *player1_drop, *player2_drop;
 
 json config;
 double currX, currY;
@@ -52,7 +56,7 @@ void initEndGameMenu();
 void initTopMenu();
 bool isValidInput(char c);
 
-void exit();
+void close();
 void start();
 void menu();
 void restart();
@@ -78,7 +82,6 @@ int main() {
 				nbFrames = 0;
 				lastTime += 1.0;
 			}
-
 			render(window);
 		}
 		ImGui_ImplOpenGL3_Shutdown();
@@ -125,7 +128,6 @@ void initMainMenu() {
 		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 60, "Tic-Tac-Toe", false));
 	main_text->SetTextSize("big");
 	main_text->SetAlignmentHor(AlignmentHor::CENTER);
-
 	sub_text = dynamic_cast<Text_Field *>(
 		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "by Nap_Nap", false));
 	sub_text->SetPadding(0);
@@ -136,9 +138,29 @@ void initMainMenu() {
 	start_btn->button_text.SetTextSize("medium");
 	start_btn->SetOnClick(start);
 
-	exit_btn = dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit"));
+	player1_text = dynamic_cast<Text_Field *>(
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "Player O:", false));
+	player1_text->SetTextSize("small");
+	player1_text->SetPadding(5);
+	player1_drop =
+		dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30, "", false));
+	player1_drop->AddItems({"Human", "Ai 1", "Ai 2"});
+	player1_drop->SetPadding(0);
+
+	player2_text = dynamic_cast<Text_Field *>(
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "Player X:", false));
+	player2_text->SetTextSize("small");
+	player2_text->SetPadding(5);
+
+	player2_drop =
+		dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30, "", false));
+	player2_drop->AddItems({"Human", "Ai 1", "Ai 2"});
+	player2_drop->SetPadding(0);
+
+	exit_btn =
+		dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit", true));
 	exit_btn->button_text.SetTextSize("medium");
-	exit_btn->SetOnClick(exit);
+	exit_btn->SetOnClick(close);
 }
 
 void initPauseMenu() {
@@ -155,6 +177,11 @@ void initPauseMenu() {
 	start_btn->SetVisibility(true);
 	start_btn->button_text.SetText("Resume");
 	start_btn->SetOnClick(resume);
+
+	player1_text->SetVisibility(false);
+	player2_text->SetVisibility(false);
+	player1_drop->SetVisibility(false);
+	player2_drop->SetVisibility(false);
 
 	if (restart_btn == nullptr) {
 		restart_btn = dynamic_cast<Button *>(
@@ -179,6 +206,11 @@ void initEndGameMenu() {
 	sub_text->SetPadding(0);
 	sub_text->SetTextSize("medium");
 	sub_text->SetAlignmentHor(AlignmentHor::CENTER);
+
+	player1_text->SetVisibility(true);
+	player2_text->SetVisibility(true);
+	player1_drop->SetVisibility(true);
+	player2_drop->SetVisibility(true);
 
 	if (game.GetWinner() != '-') {
 		sub_text->SetTextf("Winner %c", game.GetWinner());
@@ -268,6 +300,8 @@ void render(GLFWwindow *window) {
 	player_text->SetTextf("Current player %c", game.GetPlayer());
 	top_menu.Draw();
 
+	main_menu.DrawPopups();
+
 	if (debug_visible) {
 		render_debug_frame(window);
 	}
@@ -286,6 +320,9 @@ void render_debug_frame(GLFWwindow *window) {
 	ImGui::Text("%f.02 ms/frame\n", spf);
 
 	ImGui::Text("Position x: %.0f, y: %.0f", currX, currY);
+	if (Gui_System::GetFocus() != nullptr) {
+		ImGui::Text("Button %s", Gui_System::GetFocus()->GetText().c_str());
+	}
 	ImGui::Text("Clicked tile: %d", game.GetLastTile());
 	ImGui::Text("Current player: %c", game.GetPlayer());
 
@@ -323,15 +360,21 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 	if (io.WantCaptureMouse)
 		return;
 
-	if (main_menu.Visible)
+	if (main_menu.Visible) {
+		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+			if (Gui_System::Handle())
+				return;
+		}
 		return;
 
-	if (currY >= 600.0f)
-		return;
+	} else {
+		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+			if (currY >= 600.0f)
+				return;
 
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		game.ChosenTile(currX, currY);
-		click_count++;
+			game.ChosenTile(currX, currY);
+			click_count++;
+		}
 	}
 }
 
@@ -344,13 +387,14 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	}
 }
 
-void exit() { glfwSetWindowShouldClose(window, true); }
+void close() { glfwSetWindowShouldClose(window, true); }
 
 void start() {
 	lock_visible = false;
 
 	main_menu.SetVisibility(false);
 	initPauseMenu();
+	main_menu.UpdateItems();
 }
 
 void restart() {
@@ -360,6 +404,7 @@ void restart() {
 	main_menu.SetVisibility(false);
 
 	initPauseMenu();
+	main_menu.UpdateItems();
 }
 
 void menu() {
@@ -368,5 +413,4 @@ void menu() {
 
 	main_menu.SetVisibility(!main_menu.Visible);
 }
-
 void resume() { main_menu.SetVisibility(false); }

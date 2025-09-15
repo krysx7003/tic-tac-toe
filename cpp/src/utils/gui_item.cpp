@@ -1,6 +1,6 @@
 #include "gui_item.h"
 
-void Gui_Item::setupVertices() {
+void Gui_Item::updatePos() {
 	float fWidth = (width / (window_width / 2.0f));
 	float fHeight = (height / (window_height / 2.0f));
 	float fStart_pos_x = (start_pos_x / (window_width / 2.0f)) - 1;
@@ -69,13 +69,14 @@ void Gui_Item::SetVisibility(bool visible) { this->Visible = visible; }
 
 void Gui_Item::SetHeight(int new_height) {
 	this->height = new_height;
-	setupVertices();
+	updatePos();
 }
 
 void Gui_Item::SetStartY(int start_y) {
 	this->start_pos_y = start_y;
-	setupVertices();
+	updatePos();
 }
+void Gui_Item::SetType(Type type) { this->ItemType = type; }
 
 void Gui_Item::SetPadding(int top) { this->padding_top = top; }
 void Gui_Item::SetId(int id) { this->Menu_id = id; }

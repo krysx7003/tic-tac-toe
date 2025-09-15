@@ -38,6 +38,8 @@ class Menu : public Gui_Item {
 	Menu() {};
 
 	void Draw() override;
+	void DrawPopups();
+
 	Gui_Item *AddItem(Gui_Item::Type type, int width_px, int height_px, std::string name,
 					  bool updateVertices = true, int id = -1);
 	void RemoveItem(int id, bool update);
