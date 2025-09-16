@@ -290,11 +290,6 @@ void render(GLFWwindow *window) {
 	if (!game.active) {
 		initEndGameMenu();
 	}
-
-	if (lock_visible) {
-		main_menu.SetVisibility(true);
-	}
-
 	main_menu.Draw();
 
 	player_text->SetTextf("Current player %c", game.GetPlayer());
@@ -362,15 +357,16 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 
 	if (main_menu.Visible) {
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-			if (Gui_System::Handle())
-				return;
+			Gui_System::Handle();
 		}
 		return;
 
 	} else {
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-			if (currY >= 600.0f)
+			if (currY <= 40.0f) {
+				Gui_System::Handle();
 				return;
+			}
 
 			game.ChosenTile(currX, currY);
 			click_count++;

@@ -27,7 +27,7 @@
 - [x] Make button class(Custom shape rectangle, changes color when mouse is
         over it, can be clicked)
 - [x] Add start menu(Start, Exit)
-- [ ] Add spinner class(On click expands box with buttons)
+- [x] Add spinner class(On click expands box with buttons)
 - [ ] Start allows to set users(human/AI)
 - [x] Add menu bar(Always active menu, displaying current player and pause menu button)
 - [x] Open pause menu either by ESC or button

@@ -6,8 +6,6 @@
 class Button : public Gui_Item {
 	GLFWwindow *window;
 	std::function<void()> on_click_func;
-	bool wasMousePressed = false;
-	bool isClickHandled = false;
 	glm::vec4 HiColor = glm::vec4(1.0f, 1.0f, 1.0f, 0.25f);
 
 	bool isMouseOn();
