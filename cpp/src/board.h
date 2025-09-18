@@ -24,19 +24,21 @@ class Board {
 	glm::vec2 tile_size_px;
 
 	bool boardGui = false;
+	bool prettyPrint = true;
 
 	SpriteRenderer *Renderer;
 	Line lines;
 
   public:
-	Tile *Tiles_n;
+	Tile *Tiles;
 	int tiles_num;
 	int width;
 
-	Board() { Tiles_n = new Tile[tiles_num]; };
+	Board() { Tiles = new Tile[tiles_num]; };
 	void Init();
 
 	void Render();
+	void Print(bool tooltip);
 	void RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size);
 	bool TakeTile(int pos, char player);
 	void RestetTiles();

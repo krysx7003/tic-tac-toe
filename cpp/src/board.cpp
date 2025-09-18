@@ -18,8 +18,9 @@ void Board::Init() {
 	tile_size = 2.0f / width;
 	tile_width = config["board"]["tile_width"];
 	tile_size_px = glm::vec2(tile_width, tile_width);
+	prettyPrint = config["pretty_print"];
 
-	Tiles_n = new Tile[tiles_num];
+	Tiles = new Tile[tiles_num];
 
 	if (boardGui) {
 		for (int row = 0; row < width; row++) {
@@ -27,7 +28,7 @@ void Board::Init() {
 				int id = col + row * 3;
 				int x = col * tile_width;
 				int y = row * tile_width + top_menu_height + 5;
-				Tiles_n[id] = Tile(x, y, tile_width, tile_width);
+				Tiles[id] = Tile(x, y, tile_width, tile_width);
 				// The +5 pulled directly out of my ass
 				// (I have no idea why does it work, but it does)
 			}
@@ -55,48 +56,78 @@ void Board::Init() {
 		ResourceManager::GetShader("piece").Use().SetInteger("image", 0);
 		ResourceManager::GetShader("piece").SetMatrix4("projection", projection);
 		Renderer = new SpriteRenderer(ResourceManager::GetShader("piece"));
+	} else {
+		for (int i = 0; i < tiles_num; i++) {
+			Tiles[i] = Tile();
+			Tiles[i].State = Tile::State::Empty;
+		}
 	}
 }
 
 void Board::Render() {
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	for (int i = 0; i < tiles_num; i++) {
-		Tiles_n[i].Render();
+		Tiles[i].Render();
 	}
 	lines.Draw(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 
+void Board::Print(bool tooltip) {
+	if (!prettyPrint) {
+		for (int i = 0; i < tiles_num; i++) {
+			printf("\\%c", Tiles[i].State);
+		}
+
+		printf("\n");
+
+		return;
+	}
+
+	printf("\n-------------\n");
+	printf("| %c | %c | %c | ", Tiles[0].State, Tiles[1].State, Tiles[2].State);
+	if (tooltip)
+		printf("| 0 | 1 | 2 |");
+	printf("\n----------\n");
+
+	printf("| %c | %c | %c | ", Tiles[3].State, Tiles[4].State, Tiles[5].State);
+	if (tooltip)
+		printf("| 3 | 4 | 5 |");
+	printf("\n----------\n");
+
+	printf("| %c | %c | %c | ", Tiles[6].State, Tiles[7].State, Tiles[8].State);
+	if (tooltip)
+		printf("| 6 | 7 | 8 |");
+	printf("\n----------\n");
+}
+
 void Board::RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size) {
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	Renderer->DrawSprite(win_texture, texture_pos, texture_size, 0.0f,
 						 glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
 }
 
 bool Board::TakeTile(int pos, char player) {
-	if (Tiles_n[pos].State != Tile::State::Empty) {
+	if (Tiles[pos].State != Tile::State::Empty) {
 		return false;
 	}
+	printf("Id %d, Player %c, State %c,\n", pos, player, Tiles[pos].State);
+
 	if (player == Player::O) {
-		Tiles_n[pos].State = Tile::State::TakenO;
+		Tiles[pos].State = Tile::State::TakenO;
 	} else {
-		Tiles_n[pos].State = Tile::State::TakenX;
+		Tiles[pos].State = Tile::State::TakenX;
 	}
 	return true;
 }
 
 void Board::RestetTiles() {
 	for (int i = 0; i < tiles_num; i++) {
-		Tiles_n[i].State = Tile::State::Empty;
+		Tiles[i].State = Tile::State::Empty;
 	}
 }
 
 int Board::TileUnderMouse(double x, double y) {
 	int i = 0;
 	for (; i < tiles_num; i++) {
-		if (Tiles_n[i].IsMouseOn(x, y))
+		if (Tiles[i].IsMouseOn(x, y))
 			break;
 	}
 
@@ -106,7 +137,7 @@ int Board::TileUnderMouse(double x, double y) {
 std::vector<char> Board::GetTilesState() {
 	std::vector<char> tab(tiles_num);
 	for (int i = 0; i < tiles_num; i++) {
-		tab[i] = Tiles_n[i].State;
+		tab[i] = Tiles[i].State;
 	}
 	return tab;
 }

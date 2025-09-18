@@ -9,6 +9,9 @@ SpriteRenderer::~SpriteRenderer() { glDeleteVertexArrays(1, &this->quadVAO); }
 
 void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position, glm::vec2 size,
 								float rotate, glm::vec4 color) {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	this->shader.Use();
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(position, 0.0f));

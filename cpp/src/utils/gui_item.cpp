@@ -66,6 +66,7 @@ int Gui_Item::GetWidth() { return width; }
 int Gui_Item::GetPadding() { return padding_top; }
 
 void Gui_Item::SetVisibility(bool visible) { this->Visible = visible; }
+void Gui_Item::SetVisibility() { this->Visible = !this->Visible; }
 
 void Gui_Item::SetHeight(int new_height) {
 	this->height = new_height;

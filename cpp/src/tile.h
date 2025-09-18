@@ -22,7 +22,7 @@ class Tile {
 		static const char TakenX = 'X';
 		static const char TakenO = 'O';
 	};
-	char State = State::Empty;
+	char State;
 
 	Tile(int start_pos_x, int start_pos_y, int width, int height)
 		: start_pos_x(start_pos_x), start_pos_y(start_pos_y), width(width), height(height) {

@@ -64,6 +64,7 @@ class Gui_Item {
 
 	void SetType(Type type);
 	void SetVisibility(bool visible);
+	void SetVisibility();
 	void SetPadding(int top);
 	void SetOutline(glm::bvec4 outline);
 	void SetOutlineWidth(float width);

@@ -90,3 +90,7 @@ void Dropdown::AddItems(std::vector<std::string> names) {
 	createBox(this->width, total_height, this->start_pos_x, child_start_y);
 	setCurrent(0);
 }
+
+void Dropdown::SetDropdown(bool visible) { this->dropdown_visible = visible; }
+
+std::string Dropdown::GetSelected() { return this->currItem.GetText(); }

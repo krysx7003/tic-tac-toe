@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "player.h"
 #include "thirdparty/glad/glad.h"
 #include "thirdparty/imgui/backends/imgui_impl_glfw.h"
 #include "thirdparty/imgui/backends/imgui_impl_opengl3.h"
@@ -41,7 +42,6 @@ Dropdown *player1_drop, *player2_drop;
 json config;
 double currX, currY;
 double spf = 0;
-int click_count = 0;
 int top_menu_h = 0;
 
 GLFWwindow *init();
@@ -50,11 +50,12 @@ void render_debug_frame(GLFWwindow *window);
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+std::string setPlayer(char player);
+bool getInput(std::string option);
 void initMainMenu();
 void initPauseMenu();
 void initEndGameMenu();
 void initTopMenu();
-bool isValidInput(char c);
 
 void close();
 void start();
@@ -91,33 +92,59 @@ int main() {
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	} else {
+		std::string X, O;
 		game.Init();
+
+		Player::PrintOptions();
+		X = setPlayer('X');
+		O = setPlayer('O');
+
 		while (true) {
-			game.Start();
+			game.Start(X, O);
 
-			char c;
-			printf("Restart (y/n): ");
-			scanf(" %c", &c);
+			game.Print();
 
-			while (!isValidInput(c)) {
-				printf("Invalid input. Restart (y/n): ");
-				scanf(" %c", &c);
-			}
+			if (getInput("Restart (y/n)")) {
+				if (getInput("Change players (y/n)")) {
+					Player::PrintOptions();
+					X = setPlayer('X');
+					O = setPlayer('O');
+				}
 
-			if (c == 'y')
 				game.Restart();
-			else
+			} else
 				break;
 		}
 	}
 	return 0;
 }
 
-bool isValidInput(char c) {
-	if (c == 'y' || c == 'n')
-		return true;
+bool getInput(std::string option) {
+	char c;
+	printf("%s: ", option.c_str());
+	scanf(" %c", &c);
 
-	return false;
+	while (c != 'y' && c != 'n') {
+		printf("Invalid input. %s: ", option.c_str());
+		scanf(" %c", &c);
+	}
+
+	return (c == 'y');
+}
+
+std::string setPlayer(char player) {
+	char c;
+
+	printf("Chose player %c: ", player);
+	scanf(" %c", &c);
+
+	while (!Player::ValidOption(c)) {
+		printf("Invalid input. Chose player %c: ", player);
+		scanf(" %c", &c);
+	}
+
+	int id = c - '0';
+	return Player::GetOption(id);
 }
 
 void initMainMenu() {
@@ -144,7 +171,7 @@ void initMainMenu() {
 	player1_text->SetPadding(5);
 	player1_drop =
 		dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30, "", false));
-	player1_drop->AddItems({"Human", "Ai 1", "Ai 2"});
+	player1_drop->AddItems(Player::GetOptions());
 	player1_drop->SetPadding(0);
 
 	player2_text = dynamic_cast<Text_Field *>(
@@ -154,7 +181,7 @@ void initMainMenu() {
 
 	player2_drop =
 		dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30, "", false));
-	player2_drop->AddItems({"Human", "Ai 1", "Ai 2"});
+	player2_drop->AddItems(Player::GetOptions());
 	player2_drop->SetPadding(0);
 
 	exit_btn =
@@ -287,7 +314,7 @@ void render(GLFWwindow *window) {
 
 	game.Render();
 
-	if (!game.active) {
+	if (game.ended) {
 		initEndGameMenu();
 	}
 	main_menu.Draw();
@@ -326,7 +353,7 @@ void render_debug_frame(GLFWwindow *window) {
 	ImGui::Text("| %c | %c | %c |\n-------------", state[3], state[4], state[5]);
 	ImGui::Text("| %c | %c | %c |\n-------------", state[6], state[7], state[8]);
 
-	if (!game.active) {
+	if (game.ended) {
 		ImGui::Text("Game ended winner: %c", game.GetWinner());
 	}
 
@@ -369,7 +396,6 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 			}
 
 			game.ChosenTile(currX, currY);
-			click_count++;
 		}
 	}
 }
@@ -379,7 +405,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 		return;
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-		main_menu.SetVisibility(!main_menu.Visible);
+		main_menu.SetVisibility();
 	}
 }
 
@@ -389,8 +415,14 @@ void start() {
 	lock_visible = false;
 
 	main_menu.SetVisibility(false);
+	player1_drop->SetDropdown(false);
+	player2_drop->SetDropdown(false);
 	initPauseMenu();
 	main_menu.UpdateItems();
+
+	if (!game.active) {
+		game.Start(player1_drop->GetSelected(), player2_drop->GetSelected());
+	}
 }
 
 void restart() {
@@ -401,12 +433,16 @@ void restart() {
 
 	initPauseMenu();
 	main_menu.UpdateItems();
+
+	if (!game.active) {
+		game.Start(player1_drop->GetSelected(), player2_drop->GetSelected());
+	}
 }
 
 void menu() {
 	if (lock_visible)
 		return;
 
-	main_menu.SetVisibility(!main_menu.Visible);
+	main_menu.SetVisibility();
 }
 void resume() { main_menu.SetVisibility(false); }

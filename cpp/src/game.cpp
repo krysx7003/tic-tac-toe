@@ -8,48 +8,50 @@ void Game::Init() {
 	config = ResourceManager::Config;
 	top_menu_height = config["top_menu"]["height"].get<int>();
 
+	bool gui = config["gui"];
+
 	curr_player = Player::O;
 
-	ResourceManager::LoadShader("piece.vs", "piece.frag", "piece");
-	ResourceManager::LoadShader("flat_argb.vs", "flat_argb.frag", "argb");
+	if (gui) {
+		ResourceManager::LoadShader("piece.vs", "piece.frag", "piece");
+		ResourceManager::LoadShader("flat_argb.vs", "flat_argb.frag", "argb");
 
-	ResourceManager::LoadTexture("X.png", true, "X");
-	ResourceManager::LoadTexture("O.png", true, "O");
+		ResourceManager::LoadTexture("X.png", true, "X");
+		ResourceManager::LoadTexture("O.png", true, "O");
 
-	ResourceManager::LoadTexture("h_line.png", true, "horizontal");
-	ResourceManager::LoadTexture("v_line.png", true, "vertical");
-	ResourceManager::LoadTexture("d_r_line.png", true, "diagonal_r");
-	ResourceManager::LoadTexture("d_l_line.png", true, "diagonal_l");
+		ResourceManager::LoadTexture("h_line.png", true, "horizontal");
+		ResourceManager::LoadTexture("v_line.png", true, "vertical");
+		ResourceManager::LoadTexture("d_r_line.png", true, "diagonal_r");
+		ResourceManager::LoadTexture("d_l_line.png", true, "diagonal_l");
+	}
 
 	board.Init();
 }
 
-void Game::Start() {
+void Game::Start(std::string player1, std::string player2) {
+	// printf("O: %s,X: %s", player1.c_str(), player2.c_str());
+
+	active = true;
+}
+
+void Game::Print() {
 	std::vector<char> state = board.GetTilesState();
 	while (active) {
 		system("clear");
 
-		printf("Current player: %c", GetPlayer());
-		printf("\n-------------\n");
-		printf("| %c | %c | %c | | 0 | 1 | 2 |\n----------\n", state[0], state[1], state[2]);
-		printf("| %c | %c | %c | | 3 | 4 | 5 |\n----------\n", state[3], state[4], state[5]);
-		printf("| %c | %c | %c | | 6 | 7 | 8 |\n----------\n", state[6], state[7], state[8]);
-
+		board.Print(true);
+		printf("Current player: %c\n", GetPlayer());
 		int id = -1;
 
-		printf("Next move\n> ");
-		scanf("%d", &id);
+		Player::MakeMove(curr_player);
 
 		while (!ChosenTile(id)) {
-			printf("Invalid input. Next move\n> ");
-			scanf("%d", &id);
+			printf("Invalid input. ");
+			Player::MakeMove(curr_player);
 		}
 	}
 	if (!IsDraw(state)) {
-		printf("\n-------------\n");
-		printf("| %c | %c | %c |\n----------\n", state[0], state[1], state[2]);
-		printf("| %c | %c | %c |\n----------\n", state[3], state[4], state[5]);
-		printf("| %c | %c | %c |\n----------\n", state[6], state[7], state[8]);
+		board.Print(false);
 
 		printf("\nPlayer %c won\n", GetWinner());
 	} else {
@@ -69,7 +71,8 @@ void Game::Restart() {
 	curr_player = Player::O;
 	lastTile = -1;
 	winner = -1;
-	active = true;
+	ended = false;
+	active = false;
 
 	board.RestetTiles();
 }
@@ -114,8 +117,10 @@ void Game::swapPlayer() {
 
 	std::vector<char> state = board.GetTilesState();
 	if (WinCondition(state)) {
+		ended = true;
 		active = false;
 	} else if (IsDraw(state)) {
+		ended = true;
 		active = false;
 	}
 }

@@ -19,9 +19,9 @@ class Dropdown : public Gui_Item {
 	bool dropdown_visible;
 
 	void updatePos() override;
-	void toggleDropdown();
 	void setCurrent(int id);
 	void createBox(int width, int height, int start_pos_x, int start_pos_y);
+	void toggleDropdown();
 
   public:
 	Dropdown(GLFWwindow *window, int width, int height, int start_pos_x, int start_pos_y)
@@ -39,4 +39,7 @@ class Dropdown : public Gui_Item {
 	void DrawPopups();
 
 	void AddItems(std::vector<std::string> names);
+
+	void SetDropdown(bool visible);
+	std::string GetSelected();
 };
