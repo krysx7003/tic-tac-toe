@@ -1,6 +1,7 @@
 #include "utils/resource_manager.h"
 
 #include "game.h"
+#include "player_manager.h"
 #include "tile.h"
 #include <glm/ext/vector_float2.hpp>
 
@@ -9,8 +10,6 @@ void Game::Init() {
 	top_menu_height = config["top_menu"]["height"].get<int>();
 
 	bool gui = config["gui"];
-
-	curr_player = Player::O;
 
 	if (gui) {
 		ResourceManager::LoadShader("piece.vs", "piece.frag", "piece");
@@ -40,14 +39,14 @@ void Game::Print() {
 		system("clear");
 
 		board.Print(true);
-		printf("Current player: %c\n", GetPlayer());
+		printf("Current player: %c\n", PlayerManager::Curr_player);
 		int id = -1;
 
-		Player::MakeMove(curr_player);
+		PlayerManager::MakeMove();
 
 		while (!ChosenTile(id)) {
 			printf("Invalid input. ");
-			Player::MakeMove(curr_player);
+			PlayerManager::MakeMove();
 		}
 	}
 	if (!IsDraw(state)) {
@@ -68,7 +67,7 @@ void Game::Render() {
 }
 
 void Game::Restart() {
-	curr_player = Player::O;
+	PlayerManager::Curr_player = Player::O;
 	lastTile = -1;
 	winner = -1;
 	ended = false;
@@ -84,7 +83,7 @@ bool Game::ChosenTile(double x, double y) {
 
 	int tileId = board.TileUnderMouse(x, y);
 
-	if (board.TakeTile(tileId, curr_player)) {
+	if (board.TakeTile(tileId)) {
 		swapPlayer();
 		lastTile = tileId;
 		return true;
@@ -97,7 +96,7 @@ bool Game::ChosenTile(int tileId) {
 		return false;
 	}
 
-	if (board.TakeTile(tileId, curr_player)) {
+	if (board.TakeTile(tileId)) {
 		swapPlayer();
 		lastTile = tileId;
 		return true;
@@ -109,10 +108,10 @@ void Game::swapPlayer() {
 	if (!active) {
 		return;
 	}
-	if (curr_player == Player::O) {
-		curr_player = Player::X;
+	if (PlayerManager::Curr_player == Player::O) {
+		PlayerManager::Curr_player = Player::X;
 	} else {
-		curr_player = Player::O;
+		PlayerManager::Curr_player = Player::O;
 	}
 
 	std::vector<char> state = board.GetTilesState();
@@ -226,8 +225,6 @@ bool Game::IsDraw(std::vector<char> state) {
 	winner = '-';
 	return true;
 }
-
-char Game::GetPlayer() { return curr_player; }
 
 char Game::GetWinner() { return winner; }
 

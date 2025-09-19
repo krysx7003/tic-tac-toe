@@ -7,7 +7,6 @@ class Game {
 	json config;
 
 	int top_menu_height;
-	char curr_player = Player::O;
 	short lastTile = -1;
 	short winner = -1;
 	glm::vec2 texture_pos = glm::vec2(0, 0);
@@ -40,6 +39,5 @@ class Game {
 	short GetLastTile();
 	void Restart();
 
-	char GetPlayer();
 	char GetWinner();
 };

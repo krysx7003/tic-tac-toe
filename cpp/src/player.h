@@ -4,22 +4,19 @@
 #include <vector>
 
 class Player {
-	static int promptPlayer(std::string player);
-	static int makeRequest();
+	int makeRequest();
 
   public:
-	static std::vector<std::string> options;
-	static bool RequestHandled;
-
 	static const char O = 'O';
 	static const char X = 'X';
 
-	static std::string player1;
-	static std::string player2;
+	std::string option;
+	std::string Cmd;
+	char Type;
 
-	static int MakeMove(char player);
-	static std::vector<std::string> GetOptions();
-	static std::string GetOption(int id);
-	static void PrintOptions();
-	static bool ValidOption(char c);
+	Player(std::string option, char type) : option(option), Type(type) {};
+	Player() {};
+
+	int Prompt();
+	void Connect();
 };

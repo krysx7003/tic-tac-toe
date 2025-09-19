@@ -40,7 +40,7 @@ class Board {
 	void Render();
 	void Print(bool tooltip);
 	void RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size);
-	bool TakeTile(int pos, char player);
+	bool TakeTile(int pos);
 	void RestetTiles();
 
 	std::vector<char> GetTilesState();

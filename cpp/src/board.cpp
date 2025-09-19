@@ -1,5 +1,6 @@
 #include "board.h"
 
+#include "player_manager.h"
 #include "utils/shader.h"
 #include "utils/texture.h"
 
@@ -31,6 +32,8 @@ void Board::Init() {
 				Tiles[id] = Tile(x, y, tile_width, tile_width);
 				// The +5 pulled directly out of my ass
 				// (I have no idea why does it work, but it does)
+
+				Tiles[id].State = Tile::State::Empty;
 			}
 		}
 
@@ -104,13 +107,12 @@ void Board::RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 te
 						 glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
 }
 
-bool Board::TakeTile(int pos, char player) {
+bool Board::TakeTile(int pos) {
 	if (Tiles[pos].State != Tile::State::Empty) {
 		return false;
 	}
-	printf("Id %d, Player %c, State %c,\n", pos, player, Tiles[pos].State);
 
-	if (player == Player::O) {
+	if (PlayerManager::Curr_player == Player::O) {
 		Tiles[pos].State = Tile::State::TakenO;
 	} else {
 		Tiles[pos].State = Tile::State::TakenX;

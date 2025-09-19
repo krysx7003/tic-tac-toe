@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "player.h"
+#include "player_manager.h"
 #include "thirdparty/glad/glad.h"
 #include "thirdparty/imgui/backends/imgui_impl_glfw.h"
 #include "thirdparty/imgui/backends/imgui_impl_opengl3.h"
@@ -95,7 +95,7 @@ int main() {
 		std::string X, O;
 		game.Init();
 
-		Player::PrintOptions();
+		PlayerManager::PrintOptions();
 		X = setPlayer('X');
 		O = setPlayer('O');
 
@@ -106,7 +106,7 @@ int main() {
 
 			if (getInput("Restart (y/n)")) {
 				if (getInput("Change players (y/n)")) {
-					Player::PrintOptions();
+					PlayerManager::PrintOptions();
 					X = setPlayer('X');
 					O = setPlayer('O');
 				}
@@ -138,13 +138,13 @@ std::string setPlayer(char player) {
 	printf("Chose player %c: ", player);
 	scanf(" %c", &c);
 
-	while (!Player::ValidOption(c)) {
+	while (!PlayerManager::ValidOption(c)) {
 		printf("Invalid input. Chose player %c: ", player);
 		scanf(" %c", &c);
 	}
 
 	int id = c - '0';
-	return Player::GetOption(id);
+	return PlayerManager::GetOption(id);
 }
 
 void initMainMenu() {
@@ -171,7 +171,7 @@ void initMainMenu() {
 	player1_text->SetPadding(5);
 	player1_drop =
 		dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30, "", false));
-	player1_drop->AddItems(Player::GetOptions());
+	player1_drop->AddItems(PlayerManager::GetOptions());
 	player1_drop->SetPadding(0);
 
 	player2_text = dynamic_cast<Text_Field *>(
@@ -181,7 +181,7 @@ void initMainMenu() {
 
 	player2_drop =
 		dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30, "", false));
-	player2_drop->AddItems(Player::GetOptions());
+	player2_drop->AddItems(PlayerManager::GetOptions());
 	player2_drop->SetPadding(0);
 
 	exit_btn =
@@ -319,7 +319,7 @@ void render(GLFWwindow *window) {
 	}
 	main_menu.Draw();
 
-	player_text->SetTextf("Current player %c", game.GetPlayer());
+	player_text->SetTextf("Current player %c", PlayerManager::Curr_player);
 	top_menu.Draw();
 
 	main_menu.DrawPopups();
@@ -346,7 +346,7 @@ void render_debug_frame(GLFWwindow *window) {
 		ImGui::Text("Button %s", Gui_System::GetFocus()->GetText().c_str());
 	}
 	ImGui::Text("Clicked tile: %d", game.GetLastTile());
-	ImGui::Text("Current player: %c", game.GetPlayer());
+	ImGui::Text("Current player: %c", PlayerManager::Curr_player);
 
 	std::vector<char> state = game.board.GetTilesState();
 	ImGui::Text("| %c | %c | %c |\n-------------", state[0], state[1], state[2]);
