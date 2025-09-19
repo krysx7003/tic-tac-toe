@@ -11,33 +11,44 @@ int Player::makeRequest() {
 }
 
 int Player::Prompt() {
-	if (option == PlayerManager::Human) {
+	if (this->Name == PlayerManager::Human) {
 		int id = -1;
 
 		printf("Next move\n> ");
 		scanf("%d", &id);
 		return id;
 
-	} else if (option == PlayerManager::AI_1) {
+	} else if (this->Name == PlayerManager::AI_1) {
 		return this->makeRequest();
 
-	} else if (option == PlayerManager::AI_2) {
+	} else if (this->Name == PlayerManager::AI_2) {
 		return this->makeRequest();
 
 	} else {
-		printf("ERROR::PLAYER: Invalid option name: %s \n", option.c_str());
+		printf("ERROR::PLAYER: Invalid name: %s \n", Name.c_str());
 		exit(-1);
 	}
 }
 
-void Player::Connect() {}
+bool Player::Run() {
+	if (this->Name == PlayerManager::Human)
+		return false;
+
+	if (!this->running) {
+
+		this->running = true;
+		return true;
+	}
+
+	return false;
+}
 
 void Player::Msg(std::string message) {
-	if (option == PlayerManager::AI_1) {
+	if (this->Name == PlayerManager::AI_1) {
 		// TODO - Implement output
 		printf("Msg:%s", message.c_str());
 
-	} else if (option == PlayerManager::AI_2) {
+	} else if (this->Name == PlayerManager::AI_2) {
 		// TODO - Implement output
 		printf("Msg:%s", message.c_str());
 	}

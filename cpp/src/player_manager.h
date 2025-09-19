@@ -5,6 +5,9 @@
 #include <vector>
 
 class PlayerManager {
+	static int serverSocket;
+
+	static void check(int res, const char *message);
 
   public:
 	static std::vector<std::string> options;
@@ -20,7 +23,7 @@ class PlayerManager {
 	static std::string BoardState;
 
 	static void StartServer();
-	static void ConnectPlayers();
+	static void CloseServer();
 	static void MsgAll(std::string message);
 
 	static bool CurrPlayerHuman();
