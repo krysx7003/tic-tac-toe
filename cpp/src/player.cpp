@@ -1,26 +1,27 @@
 #include "player.h"
 #include "player_manager.h"
 
-int Player::makeRequest() { return -1; }
+int Player::makeRequest() {
+	int id = -1;
+
+	// TODO - Implement input
+	printf("Move:%s", PlayerManager::BoardState.c_str());
+	scanf(" %d", &id);
+	return id;
+}
 
 int Player::Prompt() {
-	if (option == PlayerManager::GetOption(0)) {
+	if (option == PlayerManager::Human) {
 		int id = -1;
 
 		printf("Next move\n> ");
 		scanf("%d", &id);
 		return id;
 
-	} else if (option == PlayerManager::GetOption(1)) {
-		printf("ERROR::PLAYER: Input method for this option: %s is not implemented\n",
-			   option.c_str());
-		// TODO - Implement input
+	} else if (option == PlayerManager::AI_1) {
 		return this->makeRequest();
 
-	} else if (option == PlayerManager::GetOption(2)) {
-		printf("ERROR::PLAYER: Input method for this option: %s is not implemented\n",
-			   option.c_str());
-		// TODO - Implement input
+	} else if (option == PlayerManager::AI_2) {
 		return this->makeRequest();
 
 	} else {
@@ -30,3 +31,14 @@ int Player::Prompt() {
 }
 
 void Player::Connect() {}
+
+void Player::Msg(std::string message) {
+	if (option == PlayerManager::AI_1) {
+		// TODO - Implement output
+		printf("Msg:%s", message.c_str());
+
+	} else if (option == PlayerManager::AI_2) {
+		// TODO - Implement output
+		printf("Msg:%s", message.c_str());
+	}
+}

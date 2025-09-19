@@ -19,4 +19,5 @@ class Player {
 
 	int Prompt();
 	void Connect();
+	void Msg(std::string);
 };

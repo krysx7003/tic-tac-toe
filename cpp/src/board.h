@@ -46,4 +46,6 @@ class Board {
 	std::vector<char> GetTilesState();
 
 	int TileUnderMouse(double x, double y);
+
+	std::string GetState();
 };

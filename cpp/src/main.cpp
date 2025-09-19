@@ -7,6 +7,8 @@
 #include "thirdparty/imgui/backends/imgui_impl_opengl3.h"
 #include "thirdparty/imgui/imgui.h"
 #include <GLFW/glfw3.h>
+#include <pthread.h>
+#include <signal.h>
 #include <string>
 
 #include "game.h"
@@ -43,6 +45,7 @@ json config;
 double currX, currY;
 double spf = 0;
 int top_menu_h = 0;
+bool players_notified = false;
 
 GLFWwindow *init();
 void render(GLFWwindow *window);
@@ -52,12 +55,15 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 std::string setPlayer(char player);
 bool getInput(std::string option);
+void signalHandler(int signum);
+void *playerMove(void *arg);
+
 void initMainMenu();
 void initPauseMenu();
 void initEndGameMenu();
 void initTopMenu();
 
-void close();
+void close_window();
 void start();
 void menu();
 void restart();
@@ -68,6 +74,7 @@ int main() {
 	bool gui = config["gui"];
 	top_menu_h = config["top_menu"]["height"];
 	debug_visible = config["debug_visible"];
+	pthread_t thread;
 
 	if (gui) {
 		window = init();
@@ -84,6 +91,32 @@ int main() {
 				lastTime += 1.0;
 			}
 			render(window);
+
+			if (!PlayerManager::CurrPlayerHuman()) {
+				if (!PlayerManager::RequestHandled) {
+					PlayerManager::RequestHandled = true;
+					pthread_create(&thread, NULL, playerMove, NULL);
+
+				} else {
+					int result = pthread_tryjoin_np(thread, NULL);
+					if (result == 0) {
+						PlayerManager::RequestHandled = false;
+					}
+				}
+			}
+
+			if (game.ended && !players_notified && PlayerManager::RequestHandled) {
+				players_notified = true;
+				pthread_kill(thread, SIGTERM);
+				pthread_join(thread, nullptr);
+
+				if (game.GetWinner() != '-') {
+					string msg = "Win:";
+					PlayerManager::MsgAll(msg.append(1, game.GetWinner()));
+				} else {
+					PlayerManager::MsgAll("Draw");
+				}
+			}
 		}
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
@@ -130,6 +163,20 @@ bool getInput(std::string option) {
 	}
 
 	return (c == 'y');
+}
+
+void signalHandler(int signum) { pthread_exit(nullptr); }
+
+void *playerMove(void *arg) {
+	int id = -1;
+	do {
+		signal(SIGTERM, signalHandler);
+		PlayerManager::BoardState = game.board.GetState();
+		id = PlayerManager::MakeMove();
+
+	} while (!game.ChosenTile(id));
+
+	return NULL;
 }
 
 std::string setPlayer(char player) {
@@ -187,7 +234,7 @@ void initMainMenu() {
 	exit_btn =
 		dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit", true));
 	exit_btn->button_text.SetTextSize("medium");
-	exit_btn->SetOnClick(close);
+	exit_btn->SetOnClick(close_window);
 }
 
 void initPauseMenu() {
@@ -395,6 +442,9 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 				return;
 			}
 
+			if (!PlayerManager::CurrPlayerHuman())
+				return;
+
 			game.ChosenTile(currX, currY);
 		}
 	}
@@ -409,7 +459,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	}
 }
 
-void close() { glfwSetWindowShouldClose(window, true); }
+void close_window() { glfwSetWindowShouldClose(window, true); }
 
 void start() {
 	lock_visible = false;
@@ -436,6 +486,7 @@ void restart() {
 
 	if (!game.active) {
 		game.Start(player1_drop->GetSelected(), player2_drop->GetSelected());
+		players_notified = false;
 	}
 }
 

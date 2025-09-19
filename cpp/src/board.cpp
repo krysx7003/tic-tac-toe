@@ -76,12 +76,7 @@ void Board::Render() {
 
 void Board::Print(bool tooltip) {
 	if (!prettyPrint) {
-		for (int i = 0; i < tiles_num; i++) {
-			printf("\\%c", Tiles[i].State);
-		}
-
-		printf("\n");
-
+		printf("%s\n", GetState().c_str());
 		return;
 	}
 
@@ -142,4 +137,14 @@ std::vector<char> Board::GetTilesState() {
 		tab[i] = Tiles[i].State;
 	}
 	return tab;
+}
+
+std::string Board::GetState() {
+	stringstream ss;
+	for (int i = 0; i < tiles_num; i++) {
+		ss << "\\" << Tiles[i].State;
+	}
+
+	ss << "\\";
+	return ss.str();
 }

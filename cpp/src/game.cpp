@@ -28,7 +28,9 @@ void Game::Init() {
 }
 
 void Game::Start(std::string player1, std::string player2) {
-	// printf("O: %s,X: %s", player1.c_str(), player2.c_str());
+	PlayerManager::SetPlayers(player1, player2);
+
+	PlayerManager::StartServer();
 
 	active = true;
 }
@@ -41,14 +43,12 @@ void Game::Print() {
 		board.Print(true);
 		printf("Current player: %c\n", PlayerManager::Curr_player);
 		int id = -1;
-
-		PlayerManager::MakeMove();
-
-		while (!ChosenTile(id)) {
-			printf("Invalid input. ");
-			PlayerManager::MakeMove();
-		}
+		do {
+			PlayerManager::BoardState = board.GetState();
+			id = PlayerManager::MakeMove();
+		} while (!ChosenTile(id));
 	}
+
 	if (!IsDraw(state)) {
 		board.Print(false);
 
