@@ -28,6 +28,7 @@ void Game::Init() {
 }
 
 void Game::Start(std::string player1, std::string player2) {
+	PlayerManager::Curr_player = Player::O;
 	PlayerManager::SetPlayers(player1, player2);
 
 	PlayerManager::StartServer();

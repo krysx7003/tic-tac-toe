@@ -149,6 +149,8 @@ int main() {
 				break;
 		}
 	}
+
+	PlayerManager::CleanUp();
 	return 0;
 }
 
@@ -459,7 +461,10 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	}
 }
 
-void close_window() { glfwSetWindowShouldClose(window, true); }
+void close_window() {
+	PlayerManager::CleanUp();
+	glfwSetWindowShouldClose(window, true);
+}
 
 void start() {
 	lock_visible = false;
@@ -485,6 +490,7 @@ void restart() {
 	main_menu.UpdateItems();
 
 	if (!game.active) {
+		PlayerManager::RequestHandled = false;
 		game.Start(player1_drop->GetSelected(), player2_drop->GetSelected());
 		players_notified = false;
 	}

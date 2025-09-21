@@ -1,12 +1,35 @@
 #include "player.h"
 #include "player_manager.h"
 
+#include <sys/socket.h>
+
+#define BUFFER_SIZE 1024
+
 int Player::makeRequest() {
 	int id = -1;
+	Msg("MOVE:" + PlayerManager::BoardState + "\n");
 
-	// TODO - Implement input
-	printf("Move:%s", PlayerManager::BoardState.c_str());
-	scanf(" %d", &id);
+	char buffer[BUFFER_SIZE] = {0};
+	ssize_t bytesReceived = 0;
+
+	do {
+		bytesReceived = recv(this->Socket, buffer, sizeof(buffer) - 1, 0);
+		buffer[bytesReceived] = '\0';
+
+		if (bytesReceived >= 1 && isdigit(buffer[0])) {
+			if (bytesReceived <= 0) {
+				printf("ERROR::PLAYER: Connection error or connection was closed");
+			}
+
+			int receivedNumber = buffer[0] - '0';
+			if (receivedNumber >= 0 && receivedNumber <= 9) {
+				id = receivedNumber;
+				break;
+			}
+		}
+
+	} while (true);
+
 	return id;
 }
 
@@ -35,21 +58,35 @@ bool Player::Run() {
 		return false;
 
 	if (!this->running) {
-
-		this->running = true;
-		return true;
+		pid_t pid = fork();
+		if (pid == 0) {
+			setsid();
+			execlp("gnome-terminal", "gnome-terminal", "--", "bash", "-c",
+				   "nc localhost 8080; exec bash", nullptr);
+			exit(1);
+		} else if (pid > 0) {
+			this->terminalPid = pid;
+			this->running = true;
+			return true;
+		}
 	}
 
 	return false;
 }
 
 void Player::Msg(std::string message) {
-	if (this->Name == PlayerManager::AI_1) {
-		// TODO - Implement output
-		printf("Msg:%s", message.c_str());
+	if (this->Name != PlayerManager::Human) {
+		send(this->Socket, message.c_str(), message.length(), 0);
+	}
+}
 
-	} else if (this->Name == PlayerManager::AI_2) {
-		// TODO - Implement output
-		printf("Msg:%s", message.c_str());
+void Player::CleanUp() {
+	if (running) {
+		Msg("EXIT\n");
+
+		close(Socket);
+
+		if (this->terminalPid > 0)
+			kill(this->terminalPid, SIGKILL);
 	}
 }

@@ -5,6 +5,9 @@
 #include <vector>
 
 class PlayerManager {
+	static Player *player2;
+	static Player *player1;
+
 	static int serverSocket;
 
 	static void check(int res, const char *message);
@@ -17,13 +20,13 @@ class PlayerManager {
 	static inline std::string AI_1 = "AI 1";
 	static inline std::string AI_2 = "AI 2";
 
-	static Player player1;
-	static Player player2;
 	static char Curr_player;
 	static std::string BoardState;
+	static bool ServerRunning;
 
 	static void StartServer();
 	static void CloseServer();
+	static void CleanUp();
 	static void MsgAll(std::string message);
 
 	static bool CurrPlayerHuman();

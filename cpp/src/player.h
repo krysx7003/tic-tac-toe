@@ -1,5 +1,6 @@
 #pragma once
 
+#include <signal.h>
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -7,6 +8,7 @@
 class Player {
 	std::string cmd;
 	bool running = false;
+	int terminalPid = 0;
 
 	int makeRequest();
 
@@ -21,12 +23,10 @@ class Player {
 	Player(std::string name, char type) : Name(name), Type(type) {};
 	Player() {};
 	~Player() {
-		if (running) {
-			// Kill proc
-			close(Socket);
-		}
+
 	};
 
+	void CleanUp();
 	bool Run();
 	int Prompt();
 	void Msg(std::string);
