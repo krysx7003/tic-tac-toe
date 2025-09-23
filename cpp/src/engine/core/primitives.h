@@ -1,7 +1,6 @@
 #pragma once
 
-#include "resource_manager.h"
-#include "shader.h"
+#include "glad/glad.h"
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
 #include <vector>

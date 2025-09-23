@@ -1,7 +1,8 @@
 #pragma once
 
-#include "utils/rect.h"
-#include "utils/sprite.h"
+#include "core/primitives/rect.h"
+#include "core/resource_manager.h"
+#include "core/resources/sprite.h"
 
 class Tile {
 	int start_pos_x, start_pos_y;

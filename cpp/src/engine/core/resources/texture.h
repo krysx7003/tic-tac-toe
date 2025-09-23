@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../thirdparty/glad/glad.h"
+#include "glad/glad.h"
 
 class Texture2D {
   public:

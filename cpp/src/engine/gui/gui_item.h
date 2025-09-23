@@ -3,11 +3,11 @@
 #include <cstdio>
 #include <glm/ext/vector_float3.hpp>
 
-#include "../thirdparty/glad/glad.h"
-#include "line.h"
-#include "rect.h"
+#include "core/primitives/line.h"
+#include "core/primitives/rect.h"
+#include "core/resource_manager.h"
+#include "glad/glad.h"
 #include <string>
-#include <vector>
 
 class Gui_Item {
 

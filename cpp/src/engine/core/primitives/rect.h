@@ -1,6 +1,6 @@
 #pragma once
 
-#include "primitives.h"
+#include "core/primitives.h"
 
 class Rect : public Primitives {
 

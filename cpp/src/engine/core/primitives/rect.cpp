@@ -1,4 +1,5 @@
 #include "rect.h"
+#include "core/resource_manager.h"
 
 void Rect::setupBuffer() {
 	glGenVertexArrays(1, &VAO);

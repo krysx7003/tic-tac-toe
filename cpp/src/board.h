@@ -1,16 +1,15 @@
 #pragma once
 
-#include "player.h"
+#include "core/primitives/line.h"
+#include "core/resources/sprite.h"
 #include "tile.h"
-#include "utils/line.h"
-#include "utils/sprite.h"
 
-#include "thirdparty/glad/glad.h"
-#include "thirdparty/json.hpp"
+#include "glad/glad.h"
+#include "json.hpp"
+
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <glm/glm.hpp>
-#include <istream>
 #include <vector>
 
 using json = nlohmann::json;

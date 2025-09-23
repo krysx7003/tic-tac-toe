@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include FT_FREETYPE_H
 
-#include "resource_manager.h"
+#include "core/resource_manager.h"
 #include "text_renderer.h"
 
 TextRenderer *TextRenderer::instance = nullptr;

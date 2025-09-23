@@ -1,4 +1,5 @@
 #include "line.h"
+#include "core/resource_manager.h"
 
 void Line::setupBuffer() {
 	glGenVertexArrays(1, &VAO);

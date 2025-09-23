@@ -1,8 +1,8 @@
 #pragma once
 
 #include "button.h"
-#include "gui_item.h"
-#include "rect.h"
+#include "core/primitives/rect.h"
+#include "gui/gui_item.h"
 
 #include <GLFW/glfw3.h>
 #include <cstdio>

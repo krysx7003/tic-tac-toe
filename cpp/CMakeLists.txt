@@ -10,9 +10,10 @@ find_package(OpenGL REQUIRED)
 find_package(Freetype REQUIRED)
 
 include_directories(
-    src/thirdparty
-    src/thirdparty/imgui
-    src/thirdparty/imgui/backends
+    ${CMAKE_SOURCE_DIR}/src/engine
+    ${CMAKE_SOURCE_DIR}/src/thirdparty
+    ${CMAKE_SOURCE_DIR}/src/thirdparty/imgui
+    ${CMAKE_SOURCE_DIR}/src/thirdparty/imgui/backends
     ${FREETYPE_INCLUDE_DIRS}
 )
 
@@ -26,22 +27,24 @@ set(IMGUI_SOURCES
 )
 
 set(UTIL_SOURCES
-    src/utils/shader.cpp
-    src/utils/texture.cpp
-    src/utils/resource_manager.cpp
-    src/utils/sprite.cpp
-    src/utils/menu.cpp
-    src/utils/gui_item.cpp
-    src/utils/gui_system.cpp
-    src/utils/text_field.cpp
-    src/utils/button.cpp
-    src/utils/text_renderer.cpp
-    src/utils/rect.cpp
-    src/utils/line.cpp
-    src/utils/dropdown.cpp
+    src/engine/core/resources/shader.cpp
+    src/engine/core/resources/texture.cpp
+    src/engine/core/resources/sprite.cpp
+    src/engine/core/primitives/rect.cpp
+    src/engine/core/primitives/line.cpp
+    src/engine/core/resource_manager.cpp
+    src/engine/gui/gui_item.cpp
+    src/engine/gui/gui_system.cpp
+    src/engine/gui/text/text_renderer.cpp
+    src/engine/gui/widgets/text_field.cpp
+    src/engine/gui/widgets/menu.cpp
+    src/engine/gui/widgets/button.cpp
+    src/engine/gui/widgets/dropdown.cpp
 )
 
 set(GLAD_SOURCE src/thirdparty/glad.c)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(tic-tac-toe
     src/main.cpp
@@ -64,6 +67,8 @@ target_link_libraries(tic-tac-toe
     dl
     pthread
 )
+
+target_include_directories(tic-tac-toe PRIVATE ${CMAKE_SOURCE_DIR}/engine)
 
 set_target_properties(tic-tac-toe PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "button.h"
+#include "gui/widgets/button.h"
 
 class Gui_System {
 	static Button *focusedButton;

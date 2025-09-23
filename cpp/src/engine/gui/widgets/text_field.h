@@ -1,7 +1,7 @@
 #pragma once
-#include "alignment.h"
-#include "gui_item.h"
-#include "text_renderer.h"
+#include "gui/alignment.h"
+#include "gui/gui_item.h"
+#include "gui/text/text_renderer.h"
 #include <string>
 
 class Text_Field : public Gui_Item {

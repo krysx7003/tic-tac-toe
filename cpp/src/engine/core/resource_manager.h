@@ -3,11 +3,11 @@
 #include <map>
 #include <string>
 
-#include "../thirdparty/glad/glad.h"
-#include "../thirdparty/json.hpp"
+#include "glad/glad.h"
+#include "json.hpp"
 
-#include "shader.h"
-#include "texture.h"
+#include "core/resources/shader.h"
+#include "core/resources/texture.h"
 
 using json = nlohmann::json;
 

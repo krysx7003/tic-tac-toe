@@ -1,7 +1,6 @@
 #pragma once
 
-#include "gui_item.h"
-#include "text_field.h"
+#include "gui/gui_item.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/ext/vector_float4.hpp>

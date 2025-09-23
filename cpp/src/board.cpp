@@ -1,8 +1,8 @@
 #include "board.h"
 
+#include "core/resources/shader.h"
+#include "core/resources/texture.h"
 #include "player_manager.h"
-#include "utils/shader.h"
-#include "utils/texture.h"
 
 #include <GLFW/glfw3.h>
 #include <cstdio>

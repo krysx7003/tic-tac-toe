@@ -1,4 +1,4 @@
-#include "utils/resource_manager.h"
+#include "core/resource_manager.h"
 
 #include "game.h"
 #include "player_manager.h"

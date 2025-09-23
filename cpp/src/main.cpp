@@ -1,21 +1,22 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "player_manager.h"
 #include "thirdparty/glad/glad.h"
 #include "thirdparty/imgui/backends/imgui_impl_glfw.h"
 #include "thirdparty/imgui/backends/imgui_impl_opengl3.h"
 #include "thirdparty/imgui/imgui.h"
+
 #include <GLFW/glfw3.h>
 #include <pthread.h>
 #include <signal.h>
 #include <string>
 
 #include "game.h"
-#include "utils/button.h"
-#include "utils/dropdown.h"
-#include "utils/gui_system.h"
-#include "utils/menu.h"
+#include "gui/gui_system.h"
+#include "gui/widgets/button.h"
+#include "gui/widgets/dropdown.h"
+#include "gui/widgets/menu.h"
+#include "player_manager.h"
 
 using json = nlohmann::json;
 using namespace std;

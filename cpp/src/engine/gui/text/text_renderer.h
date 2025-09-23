@@ -2,11 +2,10 @@
 
 #include <map>
 
-#include "../thirdparty/glad/glad.h"
+#include "glad/glad.h"
 #include <glm/glm.hpp>
 
-#include "shader.h"
-#include "texture.h"
+#include "core/resources/shader.h"
 
 struct Character {
 	unsigned int TextureID;

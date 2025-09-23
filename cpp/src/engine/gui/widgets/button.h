@@ -1,5 +1,5 @@
 #pragma once
-#include "gui_item.h"
+#include "gui/gui_item.h"
 #include "text_field.h"
 #include <GLFW/glfw3.h>
 

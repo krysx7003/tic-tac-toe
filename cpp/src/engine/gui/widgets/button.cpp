@@ -1,5 +1,5 @@
 #include "button.h"
-#include "gui_system.h"
+#include "gui/gui_system.h"
 
 void Button::Draw() {
 	if (!Visible)
