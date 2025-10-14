@@ -1,5 +1,4 @@
 **/build/release/*
 **/build/debug/*
+**/venv/*
 
-!**/build/textures/*
-!**/build/shaders/*
