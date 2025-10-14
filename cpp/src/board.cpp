@@ -29,10 +29,8 @@ void Board::Init() {
 			for (int col = 0; col < width; col++) {
 				int id = col + row * 3;
 				int x = col * tile_width;
-				int y = row * tile_width + top_menu_height + 5;
+				int y = row * tile_width + top_menu_height;
 				Tiles[id] = Tile(x, y, tile_width, tile_width);
-				// The +5 pulled directly out of my ass
-				// (I have no idea why does it work, but it does)
 
 				Tiles[id].State = Tile::State::Empty;
 			}

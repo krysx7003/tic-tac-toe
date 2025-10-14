@@ -6,7 +6,7 @@
 #include <vector>
 
 class Player {
-	std::string cmd;
+
 	bool running = false;
 	int terminalPid = 0;
 
@@ -17,10 +17,11 @@ class Player {
 	static const char X = 'X';
 
 	std::string Name;
+	std::string Cmd; //"nc localhost 8080"
 	int Socket;
 	char Type;
 
-	Player(std::string name, char type) : Name(name), Type(type) {};
+	Player(std::string name, char type, std::string cmd) : Name(name), Type(type), Cmd(cmd) {};
 	Player() {};
 	~Player() {
 

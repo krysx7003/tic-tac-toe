@@ -16,6 +16,10 @@
         {
             "name": "AI 1",
             "cmd": "echo test"
+        },
+        {
+            "name": "AI 2",
+            "cmd": "echo test"
         }
     ],
     "board":{

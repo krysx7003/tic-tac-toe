@@ -77,6 +77,7 @@ int main() {
 	debug_visible = config["debug_visible"];
 	pthread_t thread;
 
+	PlayerManager::Init();
 	if (gui) {
 		window = init();
 		game.Init();

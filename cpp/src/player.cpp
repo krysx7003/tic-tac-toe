@@ -41,15 +41,8 @@ int Player::Prompt() {
 		scanf("%d", &id);
 		return id;
 
-	} else if (this->Name == PlayerManager::AI_1) {
-		return this->makeRequest();
-
-	} else if (this->Name == PlayerManager::AI_2) {
-		return this->makeRequest();
-
 	} else {
-		printf("ERROR::PLAYER: Invalid name: %s \n", Name.c_str());
-		exit(-1);
+		return this->makeRequest();
 	}
 }
 
@@ -61,8 +54,9 @@ bool Player::Run() {
 		pid_t pid = fork();
 		if (pid == 0) {
 			setsid();
-			execlp("gnome-terminal", "gnome-terminal", "--", "bash", "-c",
-				   "nc localhost 8080; exec bash", nullptr);
+			std::string final_cmd = this->Cmd + "; exec bash";
+			execlp("gnome-terminal", "gnome-terminal", "--", "bash", "-c", final_cmd.c_str(),
+				   nullptr);
 			exit(1);
 		} else if (pid > 0) {
 			this->terminalPid = pid;

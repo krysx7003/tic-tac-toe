@@ -1,8 +1,8 @@
 #pragma once
 
 #include "player.h"
+#include <map>
 #include <string>
-#include <vector>
 
 class PlayerManager {
 	static Player *player2;
@@ -13,16 +13,16 @@ class PlayerManager {
 	static void check(int res, const char *message);
 
   public:
-	static std::vector<std::string> options;
+	static std::map<std::string, std::string> options;
 	static bool RequestHandled;
 
 	static inline std::string Human = "Human";
-	static inline std::string AI_1 = "AI 1";
-	static inline std::string AI_2 = "AI 2";
 
 	static char Curr_player;
 	static std::string BoardState;
 	static bool ServerRunning;
+
+	static void Init();
 
 	static void StartServer();
 	static void CloseServer();

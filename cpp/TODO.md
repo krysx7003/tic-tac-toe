@@ -35,7 +35,6 @@
 - [x] Add end game menu
 - [ ] Split current implementation of menu to Row\_Menu and Col\_Menu
 - [x] Fix draw displaying win
-- [ ] Move click handling to tile class
 - [x] Make sensible defaults in menu class
 
 ## Game rules

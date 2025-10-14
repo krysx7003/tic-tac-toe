@@ -1,4 +1,5 @@
 #include "player_manager.h"
+#include "core/resource_manager.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -8,27 +9,51 @@
 #define SOCKET_ERROR (-1)
 #define SERVER_SOCKET 8080
 
-std::vector<std::string> PlayerManager::options = {Human, AI_1, AI_2};
-
-std::vector<std::string> PlayerManager::GetOptions() { return options; }
+std::map<std::string, std::string> PlayerManager::options = {{PlayerManager::Human, "echo ERROR"}};
 
 bool PlayerManager::RequestHandled = false;
 
-Player *PlayerManager::player1 = new Player("Human", Player::O);
-Player *PlayerManager::player2 = new Player("Human", Player::X);
+Player *PlayerManager::player1 = new Player(Human, Player::O, options[Human]);
+Player *PlayerManager::player2 = new Player(Human, Player::X, options[Human]);
 char PlayerManager::Curr_player = Player::O;
 std::string PlayerManager::BoardState = "/ / / / / / / / / /";
 
 int PlayerManager::serverSocket;
 bool PlayerManager::ServerRunning = false;
 
-void PlayerManager::PrintOptions() {
-	for (int i = 0; i < options.size(); i++) {
-		printf("%d. %s\n", i, options[i].c_str());
+void PlayerManager::Init() {
+	json config = ResourceManager::LoadConfig();
+	json players = config["players"];
+
+	for (auto &player : players) {
+		std::string name = player["name"];
+		std::string cmd = player["cmd"];
+
+		options.insert({name, cmd});
 	}
 }
 
-std::string PlayerManager::GetOption(int id) { return options[id]; }
+std::vector<std::string> PlayerManager::GetOptions() {
+	std::vector<std::string> keys;
+	keys.push_back(Human);
+	for (const auto &pair : options) {
+		if (pair.first != Human)
+			keys.push_back(pair.first);
+	}
+	return keys;
+}
+
+void PlayerManager::PrintOptions() {
+	std::vector<std::string> keys = GetOptions();
+	for (int i = 0; i < keys.size(); i++) {
+		printf("%d. %s\n", i, keys[i].c_str());
+	}
+}
+
+std::string PlayerManager::GetOption(int id) {
+	std::vector<std::string> keys = GetOptions();
+	return keys[id];
+}
 
 bool PlayerManager::ValidOption(char c) {
 	if (c > '0' && c < '9')
@@ -102,9 +127,9 @@ int PlayerManager::MakeMove() {
 
 bool PlayerManager::CurrPlayerHuman() {
 	if (Curr_player == Player::O) {
-		return player1->Name == options[0];
+		return player1->Name == Human;
 	} else {
-		return player2->Name == options[0];
+		return player2->Name == Human;
 	}
 }
 
@@ -112,13 +137,13 @@ void PlayerManager::SetPlayers(std::string playerO, std::string playerX) {
 	if (player1->Name != playerO) {
 		delete player1;
 		player1 = nullptr;
-		player1 = new Player(playerO, Player::O);
+		player1 = new Player(playerO, Player::O, options[playerO]);
 	}
 
 	if (player2->Name != playerX) {
 		delete player2;
 		player2 = nullptr;
-		player2 = new Player(playerX, Player::X);
+		player2 = new Player(playerX, Player::X, options[playerX]);
 	}
 }
 
