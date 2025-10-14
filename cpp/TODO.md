@@ -33,7 +33,7 @@
 - [x] Open pause menu either by ESC or button
 - [x] Add pause menu(Resume, Restart, Exit)
 - [x] Add end game menu
-- [ ] Split current implementation of menu to Row\_Menu and Col\_Menu
+- [x] Split current implementation of menu to Row\_Menu and Col\_Menu
 - [x] Fix draw displaying win
 - [x] Make sensible defaults in menu class
 

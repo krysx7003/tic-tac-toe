@@ -14,8 +14,10 @@
 #include "game.h"
 #include "gui/gui_system.h"
 #include "gui/widgets/button.h"
+#include "gui/widgets/column.h"
 #include "gui/widgets/dropdown.h"
 #include "gui/widgets/menu.h"
+#include "gui/widgets/row.h"
 #include "player_manager.h"
 
 using json = nlohmann::json;
@@ -24,8 +26,8 @@ using namespace std;
 GLFWwindow *window;
 
 Game game;
-Menu main_menu;
-Menu top_menu;
+Column main_menu;
+Row top_menu;
 
 int text_id;
 
@@ -292,7 +294,6 @@ void initEndGameMenu() {
 
 void initTopMenu() {
 	top_menu.SetOutline(glm::bvec4(false, false, true, false));
-	top_menu.SetLayout(Menu::Layout::ROW);
 
 	menu_btn = dynamic_cast<Button *>(top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu"));
 	menu_btn->button_text.SetTextSize("small");
@@ -340,8 +341,8 @@ GLFWwindow *init() {
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetKeyCallback(window, key_callback);
 
-	main_menu = Menu(window, 300, 480, 150, 80);
-	top_menu = Menu(window, 600, 40, 0, 600);
+	main_menu = Column(window, 300, 480, 150, 80);
+	top_menu = Row(window, 600, 40, 0, 600);
 
 	initMainMenu();
 	initTopMenu();

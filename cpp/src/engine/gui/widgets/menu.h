@@ -10,23 +10,19 @@
 #include <vector>
 
 class Menu : public Gui_Item {
-
+  protected:
 	GLFWwindow *window;
 	float start_items_y;
 	int item_padding_x = 30;
 	std::vector<Gui_Item *> itemsDraw;
 
-	Gui_Item *addToColl(Gui_Item::Type type, int width_px, int height_px, std::string name,
-						bool updateVertices, int id);
-	Gui_Item *addToRow(Gui_Item::Type type, int width_px, int height_px, std::string name,
-					   bool updateVertices, int id);
+	virtual Gui_Item *add(Gui_Item::Type type, int width_px, int height_px, std::string name,
+						  bool updateVertices, int id) = 0;
 	std::unique_ptr<Gui_Item> createItem(Gui_Item::Type type, int width_px, int height_px,
 										 std::string name, int child_x, int child_y);
 	void updateDrawCopy();
 
   public:
-	enum class Layout { ROW, COL };
-	Menu::Layout layout = Layout::COL;
 	std::string Name;
 	std::vector<std::unique_ptr<Gui_Item>> Items;
 
@@ -42,10 +38,10 @@ class Menu : public Gui_Item {
 	Gui_Item *AddItem(Gui_Item::Type type, int width_px, int height_px, std::string name = " ",
 					  bool updateVertices = false, int id = -1);
 	void RemoveItem(int id, bool update);
-	void UpdateItems();
 
-	void SetLayout(Layout new_layout);
 	void SetName(std::string name);
-	glm::ivec2 colChildPadding(int width_px, int height_px);
-	void colUpdateItems(int child_height, int child_pos_x);
+
+	virtual glm::ivec2 ChildPadding(int width_px, int height_px) = 0;
+	virtual void UpdateItems(int child_height, int child_pos_x) = 0;
+	virtual void UpdateItems() = 0;
 };

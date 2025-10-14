@@ -38,6 +38,8 @@ set(UTIL_SOURCES
     src/engine/gui/text/text_renderer.cpp
     src/engine/gui/widgets/text_field.cpp
     src/engine/gui/widgets/menu.cpp
+    src/engine/gui/widgets/row.cpp
+    src/engine/gui/widgets/column.cpp
     src/engine/gui/widgets/button.cpp
     src/engine/gui/widgets/dropdown.cpp
 )
