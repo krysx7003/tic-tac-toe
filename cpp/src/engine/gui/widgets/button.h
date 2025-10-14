@@ -25,6 +25,7 @@ class Button : public Gui_Item {
 
 		button_text.SetBgColor(this->BgColor);
 		button_text.SetAlignmentHor(AlignmentHor::CENTER);
+		button_text.SetTextSize("medium");
 	}
 	Button() {};
 

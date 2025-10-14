@@ -8,18 +8,21 @@
         "height": 630,
         "i3-prefix": "Nap_Nap"
     },
-    "main_menu":{
-        "width": 600,
-        "height": 600
-    },
     "top_menu":{
         "width": 600,
         "height": 30
     },
+    "players":[
+        {
+            "name": "AI 1",
+            "cmd": "echo test"
+        }
+    ],
     "board":{
         "tiles_num" : 9,
-        "width" :3,
+        "width" : 3,
         "tile_width" : 200
     }
+
 
 }

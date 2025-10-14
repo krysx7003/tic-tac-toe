@@ -18,6 +18,9 @@ class TextRenderer {
 	static TextRenderer *instance;
 	unsigned int width;
 	unsigned int height;
+
+	int window_height;
+
 	std::map<std::string, int> sizes;
 
 	TextRenderer() {};

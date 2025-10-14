@@ -14,6 +14,7 @@ void Board::Init() {
 
 	float top_menu_height = config["top_menu"]["height"];
 
+	float window_height = config["window"]["height"].get<int>();
 	tiles_num = config["board"]["tiles_num"];
 	width = config["board"]["width"];
 	tile_size = 2.0f / width;
@@ -37,7 +38,7 @@ void Board::Init() {
 			}
 		}
 
-		float offset = top_menu_height / 320.0f;
+		float offset = top_menu_height / (window_height / 2);
 		float line_top = tile_width - top_menu_height;
 		float line_bot = tile_width + top_menu_height;
 
@@ -47,15 +48,15 @@ void Board::Init() {
 		grid.push_back({-1.0f / 3, 1.0f - offset, 0.0f});
 		grid.push_back({-1.0f / 3, -1.0f, 0.0f});
 
-		grid.push_back({1.0f, line_top / 640.0f, 0.0f});
-		grid.push_back({-1.0f, line_top / 640.0f, 0.0f});
-		grid.push_back({1.0f, -line_bot / 640.0f, 0.0f});
-		grid.push_back({-1.0f, -line_bot / 640.0f, 0.0f});
+		grid.push_back({1.0f, line_top / window_height, 0.0f});
+		grid.push_back({-1.0f, line_top / window_height, 0.0f});
+		grid.push_back({1.0f, -line_bot / window_height, 0.0f});
+		grid.push_back({-1.0f, -line_bot / window_height, 0.0f});
 
 		lines.Init(grid);
 		lines.SetWidth(10.0f);
 
-		glm::mat4 projection = glm::ortho(0.0f, 600.0f, 640.0f, 0.0f, -1.0f, 1.0f);
+		glm::mat4 projection = glm::ortho(0.0f, 600.0f, window_height, 0.0f, -1.0f, 1.0f);
 		ResourceManager::GetShader("piece").Use().SetInteger("image", 0);
 		ResourceManager::GetShader("piece").SetMatrix4("projection", projection);
 		Renderer = new SpriteRenderer(ResourceManager::GetShader("piece"));

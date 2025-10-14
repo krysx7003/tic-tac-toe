@@ -202,41 +202,32 @@ void initMainMenu() {
 	main_menu.SetOutline(glm::bvec4(true));
 
 	main_text = dynamic_cast<Text_Field *>(
-		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 60, "Tic-Tac-Toe", false));
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 250, 60, "Tic-Tac-Toe"));
 	main_text->SetTextSize("big");
 	main_text->SetAlignmentHor(AlignmentHor::CENTER);
 	sub_text = dynamic_cast<Text_Field *>(
-		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "by Nap_Nap", false));
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "by Nap_Nap"));
 	sub_text->SetPadding(0);
-	sub_text->SetTextSize("small");
 
-	start_btn =
-		dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Start", false));
-	start_btn->button_text.SetTextSize("medium");
+	start_btn = dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Start"));
 	start_btn->SetOnClick(start);
 
 	player1_text = dynamic_cast<Text_Field *>(
-		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "Player O:", false));
-	player1_text->SetTextSize("small");
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "Player O:"));
 	player1_text->SetPadding(5);
-	player1_drop =
-		dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30, "", false));
+	player1_drop = dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30));
 	player1_drop->AddItems(PlayerManager::GetOptions());
 	player1_drop->SetPadding(0);
 
 	player2_text = dynamic_cast<Text_Field *>(
-		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "Player X:", false));
-	player2_text->SetTextSize("small");
+		main_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 150, 30, "Player X:"));
 	player2_text->SetPadding(5);
-
-	player2_drop =
-		dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30, "", false));
+	player2_drop = dynamic_cast<Dropdown *>(main_menu.AddItem(Gui_Item::Type::DROPDOWN, 225, 30));
 	player2_drop->AddItems(PlayerManager::GetOptions());
 	player2_drop->SetPadding(0);
 
 	exit_btn =
 		dynamic_cast<Button *>(main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Exit", true));
-	exit_btn->button_text.SetTextSize("medium");
 	exit_btn->SetOnClick(close_window);
 }
 
@@ -263,7 +254,6 @@ void initPauseMenu() {
 	if (restart_btn == nullptr) {
 		restart_btn = dynamic_cast<Button *>(
 			main_menu.AddItem(Gui_Item::Type::BUTTON, 225, 50, "Restart", true, 2));
-		restart_btn->button_text.SetTextSize("medium");
 		restart_btn->SetOnClick(restart);
 	}
 }
@@ -303,13 +293,13 @@ void initTopMenu() {
 	top_menu.SetOutline(glm::bvec4(false, false, true, false));
 	top_menu.SetLayout(Menu::Layout::ROW);
 
-	menu_btn =
-		dynamic_cast<Button *>(top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu", false));
+	menu_btn = dynamic_cast<Button *>(top_menu.AddItem(Gui_Item::Type::BUTTON, 150, 40, "Menu"));
+	menu_btn->button_text.SetTextSize("small");
 	menu_btn->SetOutline(glm::bvec4(false, true, false, false));
 	menu_btn->SetOnClick(menu);
 
 	player_text = dynamic_cast<Text_Field *>(
-		top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Current player O"));
+		top_menu.AddItem(Gui_Item::Type::TEXT_FIELD, 300, 40, "Current player O", true));
 }
 
 GLFWwindow *init() {
@@ -408,7 +398,7 @@ void render_debug_frame(GLFWwindow *window) {
 	}
 
 	if (ImGui::Button("Restart")) {
-		game.Restart();
+		restart();
 	}
 
 	ImGui::End();

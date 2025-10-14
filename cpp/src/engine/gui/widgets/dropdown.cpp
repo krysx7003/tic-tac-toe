@@ -84,6 +84,7 @@ void Dropdown::AddItems(std::vector<std::string> names) {
 		item.Menu_id = i;
 		item.SetOutline(glm::vec4(false, false, true, false));
 		item.SetOnClick([this, i]() { this->setCurrent(i); });
+		item.button_text.SetTextSize("small");
 
 		items.push_back(item);
 	}

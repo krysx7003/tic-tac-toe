@@ -11,8 +11,6 @@
 
 class Gui_Item {
 
-	GLuint VAO_lines, VBO_lines;
-
   protected:
 	glm::vec3 FgColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec4 OutColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);

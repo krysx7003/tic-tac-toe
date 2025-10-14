@@ -28,13 +28,15 @@
         over it, can be clicked)
 - [x] Add start menu(Start, Exit)
 - [x] Add spinner class(On click expands box with buttons)
-- [ ] Start allows to set users(human/AI)
+- [x] Start allows to set users(human/AI)
 - [x] Add menu bar(Always active menu, displaying current player and pause menu button)
 - [x] Open pause menu either by ESC or button
 - [x] Add pause menu(Resume, Restart, Exit)
 - [x] Add end game menu
 - [ ] Split current implementation of menu to Row\_Menu and Col\_Menu
 - [x] Fix draw displaying win
+- [ ] Move click handling to tile class
+- [x] Make sensible defaults in menu class
 
 ## Game rules
 

@@ -31,6 +31,9 @@ int TextRenderer::TextWidth(std::string text, std::string size) {
 }
 
 TextRenderer::TextRenderer(unsigned int width, unsigned int height) {
+	json config = ResourceManager::Config;
+	this->window_height = config["window"]["height"].get<int>();
+
 	this->TextShader = ResourceManager::LoadShader("text_2d.vs", "text_2d.frag", "text");
 	this->TextShader.SetMatrix4(
 		"projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f),
@@ -103,7 +106,7 @@ void TextRenderer::Load(std::string font, std::string name, unsigned int fontSiz
 
 void TextRenderer::RenderText(std::string text, std::string size, int x, int y, float scale,
 							  glm::vec3 color) {
-	y = 640 - (y + sizes[size]);
+	y = this->window_height - (y + sizes[size]);
 
 	this->TextShader.Use();
 	this->TextShader.SetVector3f("textColor", color);

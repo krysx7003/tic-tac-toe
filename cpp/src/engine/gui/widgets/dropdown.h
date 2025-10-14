@@ -30,6 +30,7 @@ class Dropdown : public Gui_Item {
 		this->SetOutColor("#FFFFFF");
 
 		currItem = Button(window, width, height, start_pos_x, start_pos_y, "");
+		currItem.button_text.SetTextSize("small");
 		currItem.SetOnClick([this]() { this->toggleDropdown(); });
 		currItem.SetOutline(glm::vec4(true));
 	}

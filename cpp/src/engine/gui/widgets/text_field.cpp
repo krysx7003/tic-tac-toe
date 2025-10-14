@@ -16,7 +16,7 @@ void Text_Field::Draw() {
 		return;
 
 	background.Draw(BgColor);
-	text->RenderText(Text, size, start_pos_x + text_padding_x, start_pos_y + 10, scale, FgColor);
+	text->RenderText(Text, size, start_pos_x + text_padding_x, start_pos_y, scale, FgColor);
 }
 
 void Text_Field::SetText(std::string new_text) {
