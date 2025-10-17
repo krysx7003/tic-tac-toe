@@ -15,10 +15,10 @@ void Board::Init() {
 	float top_menu_height = config["top_menu"]["height"];
 
 	float window_height = config["window"]["height"].get<int>();
+	float window_width = config["window"]["width"].get<int>();
 	tiles_num = config["board"]["tiles_num"];
 	width = config["board"]["width"];
 	tile_width = config["board"]["tile_width"];
-	prettyPrint = config["pretty_print"];
 
 	Tiles = new Tile[tiles_num];
 
@@ -26,9 +26,10 @@ void Board::Init() {
 		for (int col = 0; col < width; col++) {
 			int id = col + row * 3;
 			int x = col * tile_width;
-			int y = row * tile_width + top_menu_height;
+			int y = row * tile_width;
 			Tiles[id] = Tile(x, y, tile_width, tile_width);
 
+			Tiles[id].SetId(id);
 			Tiles[id].State = Tile::State::Empty;
 		}
 	}
@@ -51,7 +52,7 @@ void Board::Init() {
 	lines.Init(grid);
 	lines.SetWidth(10.0f);
 
-	glm::mat4 projection = glm::ortho(0.0f, 600.0f, window_height, 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection = glm::ortho(0.0f, window_width, 0.0f, window_height, -1.0f, 1.0f);
 	ResourceManager::GetShader("piece").Use().SetInteger("image", 0);
 	ResourceManager::GetShader("piece").SetMatrix4("projection", projection);
 	Renderer = new SpriteRenderer(ResourceManager::GetShader("piece"));
@@ -86,16 +87,6 @@ void Board::RestetTiles() {
 	for (int i = 0; i < tiles_num; i++) {
 		Tiles[i].State = Tile::State::Empty;
 	}
-}
-
-int Board::TileUnderMouse(double x, double y) {
-	int i = 0;
-	for (; i < tiles_num; i++) {
-		if (Tiles[i].IsMouseOn(x, y))
-			break;
-	}
-
-	return i;
 }
 
 std::vector<char> Board::GetTilesState() {

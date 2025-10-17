@@ -12,11 +12,11 @@
 #include <string>
 
 #include "game.h"
-#include "gui/gui_system.h"
 #include "gui/widgets/button.h"
 #include "gui/widgets/column.h"
 #include "gui/widgets/dropdown.h"
 #include "gui/widgets/row.h"
+#include "mouse_handler.h"
 #include "player_manager.h"
 
 using json = nlohmann::json;
@@ -346,9 +346,21 @@ void render_debug_frame(GLFWwindow *window) {
 	ImGui::Text("%f.02 ms/frame\n", spf);
 
 	ImGui::Text("Position x: %.0f, y: %.0f", currX, currY);
-	if (Gui_System::GetFocus() != nullptr) {
-		ImGui::Text("Button %s", Gui_System::GetFocus()->GetText().c_str());
+
+	Button *button = MouseHandler::GetFocusButton();
+	std::string button_name = "None";
+	if (button != nullptr) {
+		button_name = button->GetText();
 	}
+	ImGui::Text("Button %s", button_name.c_str());
+
+	Tile *tile = MouseHandler::GetFocusTile();
+	std::string tile_name = "None";
+	if (tile != nullptr) {
+		tile_name = std::to_string(tile->GetId());
+	}
+	ImGui::Text("Tile %s", tile_name.c_str());
+
 	ImGui::Text("Clicked tile: %d", game.GetLastTile());
 	ImGui::Text("Current player: %c", PlayerManager::Curr_player);
 
@@ -386,23 +398,10 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 	if (io.WantCaptureMouse)
 		return;
 
-	if (main_menu.Visible) {
-		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-			Gui_System::Handle();
-		}
-		return;
-
-	} else {
-		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-			if (currY <= 40.0f) {
-				Gui_System::Handle();
-				return;
-			}
-
-			if (!PlayerManager::CurrPlayerHuman())
-				return;
-
-			game.ChosenTile(currX, currY);
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		Tile *tile = MouseHandler::GetFocusTile();
+		if (MouseHandler::Handle(main_menu.Visible)) {
+			game.ChosenTile(tile->GetId());
 		}
 	}
 }
@@ -416,15 +415,14 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	}
 }
 
-void close_window() {
-	PlayerManager::CleanUp();
-	glfwSetWindowShouldClose(window, true);
-}
+void close_window() { glfwSetWindowShouldClose(window, true); }
 
 void start() {
 	lock_visible = false;
 
 	main_menu.SetVisibility(false);
+	MouseHandler::SetFocusGui(nullptr);
+
 	player1_drop->SetDropdown(false);
 	player2_drop->SetDropdown(false);
 	initPauseMenu();
@@ -440,6 +438,7 @@ void restart() {
 
 	lock_visible = false;
 	main_menu.SetVisibility(false);
+	MouseHandler::SetFocusGui(nullptr);
 
 	initPauseMenu();
 	main_menu.UpdateItems();
@@ -457,4 +456,7 @@ void menu() {
 
 	main_menu.SetVisibility();
 }
-void resume() { main_menu.SetVisibility(false); }
+void resume() {
+	main_menu.SetVisibility(false);
+	MouseHandler::SetFocusGui(nullptr);
+}

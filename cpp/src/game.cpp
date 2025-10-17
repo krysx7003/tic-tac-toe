@@ -50,21 +50,6 @@ void Game::Restart() {
 	board.RestetTiles();
 }
 
-bool Game::ChosenTile(double x, double y) {
-	if (!active) {
-		return false;
-	}
-
-	int tileId = board.TileUnderMouse(x, y);
-
-	if (board.TakeTile(tileId)) {
-		swapPlayer();
-		lastTile = tileId;
-		return true;
-	}
-	return false;
-}
-
 bool Game::ChosenTile(int tileId) {
 	if (!active) {
 		return false;

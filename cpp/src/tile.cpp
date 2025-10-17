@@ -1,4 +1,5 @@
 #include "tile.h"
+#include "mouse_handler.h"
 
 glm::vec4 Tile::hexToColor(std::string color) {
 	if (color[0] != '#') {
@@ -17,10 +18,10 @@ glm::vec4 Tile::hexToColor(std::string color) {
 }
 
 void Tile::setUpBackground() {
-	float fWidth = (width / (window.x / 2.0f));
-	float fHeight = (height / (window.y / 2.0f));
-	float fStart_pos_x = (start_pos_x / (window.x / 2.0f)) - 1;
-	float fStart_pos_y = (start_pos_y / (window.y / 2.0f)) - 1;
+	float fWidth = (width / (window_dims.x / 2.0f));
+	float fHeight = (height / (window_dims.y / 2.0f));
+	float fStart_pos_x = (start_pos_x / (window_dims.x / 2.0f)) - 1;
+	float fStart_pos_y = (start_pos_y / (window_dims.y / 2.0f)) - 1;
 
 	glm::vec3 bottom_left = {fStart_pos_x, fStart_pos_y, 0.0f};
 	glm::vec3 bottom_right = {fStart_pos_x + fWidth, fStart_pos_y, 0.0f};
@@ -32,6 +33,14 @@ void Tile::setUpBackground() {
 
 void Tile::Render() {
 	this->background.Draw(this->color);
+
+	if (isMouseOn()) {
+		if (!MouseHandler::GetFocusTile() || MouseHandler::GetFocusTile() != this) {
+			MouseHandler::SetFocusTile(this);
+		}
+	} else if (MouseHandler::GetFocusTile() == this) {
+		MouseHandler::SetFocusTile(nullptr);
+	}
 
 	if (State == Tile::State::Empty) {
 		return;
@@ -47,16 +56,28 @@ void Tile::Render() {
 						 0.0f, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 
-bool Tile::IsMouseOn(double mouseX, double mouseY) {
-	if (start_pos_x > mouseX || mouseX > start_pos_x + width) {
+void Tile::Handle() {}
+
+bool Tile::isMouseOn() {
+	double mouseX, mouseY;
+	GLFWwindow *window = glfwGetCurrentContext();
+	glfwGetCursorPos(window, &mouseX, &mouseY);
+	int y = (window_dims.y) - mouseY;
+	int x = mouseX;
+
+	if (start_pos_x > x || x > start_pos_x + width) {
 		return false;
 	}
-	if (start_pos_y > mouseY || mouseY > start_pos_y + height) {
+	if (start_pos_y > y || y > start_pos_y + height) {
 		return false;
 	}
 
 	return true;
 }
+
+int Tile::GetId() { return this->id; }
+
+void Tile::SetId(int id) { this->id = id; }
 
 void Tile::SetColor(std::string color_hex) { this->color = hexToColor(color_hex); }
 
