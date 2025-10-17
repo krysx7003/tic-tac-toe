@@ -4,6 +4,6 @@ CompileFlags:
     - "-I/usr/include/freetype2"
     - "-I/usr/include/libpng16"
     - "-lfreetype"
-    - "-I./src/engine"
+    - "-I./src/board-game-engine"
     - "-I./src/thirdparty"
 

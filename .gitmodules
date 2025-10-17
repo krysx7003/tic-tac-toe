@@ -1,0 +1,4 @@
+[submodule "cpp/src/board-game-engine"]
+	path = cpp/src/board-game-engine
+	url = https://github.com/krysx7003/board-game-engine
+	branch = main
