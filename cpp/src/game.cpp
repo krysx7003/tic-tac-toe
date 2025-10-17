@@ -9,20 +9,16 @@ void Game::Init() {
 	config = ResourceManager::Config;
 	top_menu_height = config["top_menu"]["height"].get<int>();
 
-	bool gui = config["gui"];
+	ResourceManager::LoadShader("piece.vs", "piece.frag", "piece");
+	ResourceManager::LoadShader("flat_argb.vs", "flat_argb.frag", "argb");
 
-	if (gui) {
-		ResourceManager::LoadShader("piece.vs", "piece.frag", "piece");
-		ResourceManager::LoadShader("flat_argb.vs", "flat_argb.frag", "argb");
+	ResourceManager::LoadTexture("X.png", true, "X");
+	ResourceManager::LoadTexture("O.png", true, "O");
 
-		ResourceManager::LoadTexture("X.png", true, "X");
-		ResourceManager::LoadTexture("O.png", true, "O");
-
-		ResourceManager::LoadTexture("h_line.png", true, "horizontal");
-		ResourceManager::LoadTexture("v_line.png", true, "vertical");
-		ResourceManager::LoadTexture("d_r_line.png", true, "diagonal_r");
-		ResourceManager::LoadTexture("d_l_line.png", true, "diagonal_l");
-	}
+	ResourceManager::LoadTexture("h_line.png", true, "horizontal");
+	ResourceManager::LoadTexture("v_line.png", true, "vertical");
+	ResourceManager::LoadTexture("d_r_line.png", true, "diagonal_r");
+	ResourceManager::LoadTexture("d_l_line.png", true, "diagonal_l");
 
 	board.Init();
 }
@@ -34,29 +30,6 @@ void Game::Start(std::string player1, std::string player2) {
 	PlayerManager::StartServer();
 
 	active = true;
-}
-
-void Game::Print() {
-	std::vector<char> state = board.GetTilesState();
-	while (active) {
-		system("clear");
-
-		board.Print(true);
-		printf("Current player: %c\n", PlayerManager::Curr_player);
-		int id = -1;
-		do {
-			PlayerManager::BoardState = board.GetState();
-			id = PlayerManager::MakeMove();
-		} while (!ChosenTile(id));
-	}
-
-	if (!IsDraw(state)) {
-		board.Print(false);
-
-		printf("\nPlayer %c won\n", GetWinner());
-	} else {
-		printf("\nGame ended with a draw\n");
-	}
 }
 
 void Game::Render() {

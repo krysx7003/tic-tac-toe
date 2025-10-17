@@ -31,7 +31,7 @@ class Game {
 
 	void Start(std::string player1, std::string player2);
 	void Render();
-	void Print();
+
 	bool ChosenTile(double x, double y);
 	bool ChosenTile(int tileId);
 	bool WinCondition(std::vector<char> state);

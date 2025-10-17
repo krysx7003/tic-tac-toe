@@ -16,7 +16,6 @@
 #include "gui/widgets/button.h"
 #include "gui/widgets/column.h"
 #include "gui/widgets/dropdown.h"
-#include "gui/widgets/menu.h"
 #include "gui/widgets/row.h"
 #include "player_manager.h"
 
@@ -74,101 +73,61 @@ void resume();
 
 int main() {
 	config = ResourceManager::LoadConfig();
-	bool gui = config["gui"];
 	top_menu_h = config["top_menu"]["height"];
 	debug_visible = config["debug_visible"];
 	pthread_t thread;
 
 	PlayerManager::Init();
-	if (gui) {
-		window = init();
-		game.Init();
+	window = init();
+	game.Init();
 
-		double lastTime = glfwGetTime();
-		int nbFrames = 0;
-		while (!glfwWindowShouldClose(window)) {
-			double currentTime = glfwGetTime();
-			nbFrames++;
-			if (currentTime - lastTime >= 1.0) {
-				spf = 1000.0 / double(nbFrames);
-				nbFrames = 0;
-				lastTime += 1.0;
-			}
-			render(window);
+	double lastTime = glfwGetTime();
+	int nbFrames = 0;
+	while (!glfwWindowShouldClose(window)) {
+		double currentTime = glfwGetTime();
+		nbFrames++;
+		if (currentTime - lastTime >= 1.0) {
+			spf = 1000.0 / double(nbFrames);
+			nbFrames = 0;
+			lastTime += 1.0;
+		}
+		render(window);
 
-			if (!PlayerManager::CurrPlayerHuman()) {
-				if (!PlayerManager::RequestHandled) {
-					PlayerManager::RequestHandled = true;
-					pthread_create(&thread, NULL, playerMove, NULL);
+		if (!PlayerManager::CurrPlayerHuman()) {
+			if (!PlayerManager::RequestHandled) {
+				PlayerManager::RequestHandled = true;
+				pthread_create(&thread, NULL, playerMove, NULL);
 
-				} else {
-					int result = pthread_tryjoin_np(thread, NULL);
-					if (result == 0) {
-						PlayerManager::RequestHandled = false;
-					}
-				}
-			}
-
-			if (game.ended && !players_notified && PlayerManager::RequestHandled) {
-				players_notified = true;
-				pthread_kill(thread, SIGTERM);
-				pthread_join(thread, nullptr);
-
-				if (game.GetWinner() != '-') {
-					string msg = "Win:";
-					PlayerManager::MsgAll(msg.append(1, game.GetWinner()));
-				} else {
-					PlayerManager::MsgAll("Draw");
+			} else {
+				int result = pthread_tryjoin_np(thread, NULL);
+				if (result == 0) {
+					PlayerManager::RequestHandled = false;
 				}
 			}
 		}
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
 
-		glfwDestroyWindow(window);
-		glfwTerminate();
-	} else {
-		std::string X, O;
-		game.Init();
+		if (game.ended && !players_notified && PlayerManager::RequestHandled) {
+			players_notified = true;
+			pthread_kill(thread, SIGTERM);
+			pthread_join(thread, nullptr);
 
-		PlayerManager::PrintOptions();
-		X = setPlayer('X');
-		O = setPlayer('O');
-
-		while (true) {
-			game.Start(X, O);
-
-			game.Print();
-
-			if (getInput("Restart (y/n)")) {
-				if (getInput("Change players (y/n)")) {
-					PlayerManager::PrintOptions();
-					X = setPlayer('X');
-					O = setPlayer('O');
-				}
-
-				game.Restart();
-			} else
-				break;
+			if (game.GetWinner() != '-') {
+				string msg = "Win:";
+				PlayerManager::MsgAll(msg.append(1, game.GetWinner()));
+			} else {
+				PlayerManager::MsgAll("Draw");
+			}
 		}
 	}
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(window);
+	glfwTerminate();
 
 	PlayerManager::CleanUp();
 	return 0;
-}
-
-bool getInput(std::string option) {
-	char c;
-	printf("%s: ", option.c_str());
-	scanf(" %c", &c);
-
-	while (c != 'y' && c != 'n') {
-		printf("Invalid input. %s: ", option.c_str());
-		scanf(" %c", &c);
-	}
-
-	return (c == 'y');
 }
 
 void signalHandler(int signum) { pthread_exit(nullptr); }
@@ -340,6 +299,9 @@ GLFWwindow *init() {
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetKeyCallback(window, key_callback);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	main_menu = Column(window, 300, 480, 150, 80);
 	top_menu = Row(window, 600, 40, 0, 600);

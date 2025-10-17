@@ -15,7 +15,7 @@
     "players":[
         {
             "name": "AI 1",
-            "cmd": "echo test"
+            "cmd": "nc localhost 8080"
         },
         {
             "name": "AI 2",

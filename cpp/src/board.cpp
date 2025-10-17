@@ -17,53 +17,44 @@ void Board::Init() {
 	float window_height = config["window"]["height"].get<int>();
 	tiles_num = config["board"]["tiles_num"];
 	width = config["board"]["width"];
-	tile_size = 2.0f / width;
 	tile_width = config["board"]["tile_width"];
-	tile_size_px = glm::vec2(tile_width, tile_width);
 	prettyPrint = config["pretty_print"];
 
 	Tiles = new Tile[tiles_num];
 
-	if (boardGui) {
-		for (int row = 0; row < width; row++) {
-			for (int col = 0; col < width; col++) {
-				int id = col + row * 3;
-				int x = col * tile_width;
-				int y = row * tile_width + top_menu_height;
-				Tiles[id] = Tile(x, y, tile_width, tile_width);
+	for (int row = 0; row < width; row++) {
+		for (int col = 0; col < width; col++) {
+			int id = col + row * 3;
+			int x = col * tile_width;
+			int y = row * tile_width + top_menu_height;
+			Tiles[id] = Tile(x, y, tile_width, tile_width);
 
-				Tiles[id].State = Tile::State::Empty;
-			}
-		}
-
-		float offset = top_menu_height / (window_height / 2);
-		float line_top = tile_width - top_menu_height;
-		float line_bot = tile_width + top_menu_height;
-
-		std::vector<glm ::vec3> grid;
-		grid.push_back({1.0f / 3, 1.0f - offset, 0.0f});
-		grid.push_back({1.0f / 3, -1.0f, 0.0f});
-		grid.push_back({-1.0f / 3, 1.0f - offset, 0.0f});
-		grid.push_back({-1.0f / 3, -1.0f, 0.0f});
-
-		grid.push_back({1.0f, line_top / window_height, 0.0f});
-		grid.push_back({-1.0f, line_top / window_height, 0.0f});
-		grid.push_back({1.0f, -line_bot / window_height, 0.0f});
-		grid.push_back({-1.0f, -line_bot / window_height, 0.0f});
-
-		lines.Init(grid);
-		lines.SetWidth(10.0f);
-
-		glm::mat4 projection = glm::ortho(0.0f, 600.0f, window_height, 0.0f, -1.0f, 1.0f);
-		ResourceManager::GetShader("piece").Use().SetInteger("image", 0);
-		ResourceManager::GetShader("piece").SetMatrix4("projection", projection);
-		Renderer = new SpriteRenderer(ResourceManager::GetShader("piece"));
-	} else {
-		for (int i = 0; i < tiles_num; i++) {
-			Tiles[i] = Tile();
-			Tiles[i].State = Tile::State::Empty;
+			Tiles[id].State = Tile::State::Empty;
 		}
 	}
+
+	float offset = top_menu_height / (window_height / 2);
+	float line_top = tile_width - top_menu_height;
+	float line_bot = tile_width + top_menu_height;
+
+	std::vector<glm ::vec3> grid;
+	grid.push_back({1.0f / 3, 1.0f - offset, 0.0f});
+	grid.push_back({1.0f / 3, -1.0f, 0.0f});
+	grid.push_back({-1.0f / 3, 1.0f - offset, 0.0f});
+	grid.push_back({-1.0f / 3, -1.0f, 0.0f});
+
+	grid.push_back({1.0f, line_top / window_height, 0.0f});
+	grid.push_back({-1.0f, line_top / window_height, 0.0f});
+	grid.push_back({1.0f, -line_bot / window_height, 0.0f});
+	grid.push_back({-1.0f, -line_bot / window_height, 0.0f});
+
+	lines.Init(grid);
+	lines.SetWidth(10.0f);
+
+	glm::mat4 projection = glm::ortho(0.0f, 600.0f, window_height, 0.0f, -1.0f, 1.0f);
+	ResourceManager::GetShader("piece").Use().SetInteger("image", 0);
+	ResourceManager::GetShader("piece").SetMatrix4("projection", projection);
+	Renderer = new SpriteRenderer(ResourceManager::GetShader("piece"));
 }
 
 void Board::Render() {
@@ -71,29 +62,6 @@ void Board::Render() {
 		Tiles[i].Render();
 	}
 	lines.Draw(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-}
-
-void Board::Print(bool tooltip) {
-	if (!prettyPrint) {
-		printf("%s\n", GetState().c_str());
-		return;
-	}
-
-	printf("\n-------------\n");
-	printf("| %c | %c | %c | ", Tiles[0].State, Tiles[1].State, Tiles[2].State);
-	if (tooltip)
-		printf("| 0 | 1 | 2 |");
-	printf("\n----------\n");
-
-	printf("| %c | %c | %c | ", Tiles[3].State, Tiles[4].State, Tiles[5].State);
-	if (tooltip)
-		printf("| 3 | 4 | 5 |");
-	printf("\n----------\n");
-
-	printf("| %c | %c | %c | ", Tiles[6].State, Tiles[7].State, Tiles[8].State);
-	if (tooltip)
-		printf("| 6 | 7 | 8 |");
-	printf("\n----------\n");
 }
 
 void Board::RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size) {

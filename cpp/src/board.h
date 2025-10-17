@@ -18,9 +18,7 @@ using namespace std;
 class Board {
 	json config;
 
-	float tile_size;
 	float tile_width;
-	glm::vec2 tile_size_px;
 
 	bool boardGui = false;
 	bool prettyPrint = true;
@@ -37,7 +35,6 @@ class Board {
 	void Init();
 
 	void Render();
-	void Print(bool tooltip);
 	void RenderWin(Texture2D win_texture, glm::vec2 texture_pos, glm::vec2 texture_size);
 	bool TakeTile(int pos);
 	void RestetTiles();
