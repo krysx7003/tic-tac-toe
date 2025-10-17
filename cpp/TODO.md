@@ -36,6 +36,7 @@
 - [x] Split current implementation of menu to Row\_Menu and Col\_Menu
 - [x] Fix draw displaying win
 - [x] Make sensible defaults in menu class
+- [ ] Implement autorestart
 
 ## Game rules
 
