@@ -20,9 +20,6 @@ class Board {
 
 	float tile_width;
 
-	bool boardGui = false;
-	bool prettyPrint = true;
-
 	SpriteRenderer *Renderer;
 	Line lines;
 

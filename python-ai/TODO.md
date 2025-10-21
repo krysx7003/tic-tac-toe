@@ -1,5 +1,5 @@
 # TODO
 
-- [ ] Implement connecting to game
+- [x] Implement connecting to game
 - [ ] Implement alpha beta pruning
-- [ ] Implement stat tracking (time to respond win\%)
+- [x] Implement stat tracking (time to respond win\%)

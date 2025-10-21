@@ -13,11 +13,11 @@
     "players":[
         {
             "name": "AI 1",
-            "cmd": "nc localhost 8080"
+            "cmd": "python3 python-ai/ai.py"
         },
         {
             "name": "AI 2",
-            "cmd": "echo test"
+            "cmd": "nc localhost 8080"
         }
     ],
     "board":{

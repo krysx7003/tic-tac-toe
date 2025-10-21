@@ -1,4 +1,5 @@
 **/build/release/*
 **/build/debug/*
 **/venv/*
+**/results/**
 

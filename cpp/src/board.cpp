@@ -10,9 +10,8 @@
 void Board::Init() {
 	config = ResourceManager::Config;
 
-	boardGui = config["gui"];
-
 	float top_menu_height = config["top_menu"]["height"];
+	bool prettyPrint = true;
 
 	float window_height = config["window"]["height"].get<int>();
 	float window_width = config["window"]["width"].get<int>();
